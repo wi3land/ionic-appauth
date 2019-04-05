@@ -39,7 +39,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     public async performAuthorizationRequest(configuration: AuthorizationServiceConfiguration, request: AuthorizationRequest) : Promise<void> {
         let handle = this.generateRandom.generateRandom(10);
         this.storage.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle);
-        this.storage.setItem(authorizationRequestKey(handle), JSON.stringify(request.toJson()));
+        this.storage.setItem(authorizationRequestKey(handle), JSON.stringify(await request.toJson()));
         let url = this.buildRequestUrl(configuration, request);
         let returnedUrl : string | undefined = await this.browser.showWindow(url, request.redirectUri); 
 

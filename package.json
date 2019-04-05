@@ -1,6 +1,6 @@
 {
   "name": "ionic-appauth",
-  "version": "0.1.6",
+  "version": "0.2.1",
   "description": "Intergration for OpenId/AppAuth-JS into Ionic V3/4",
   "main": "lib/index.js",
   "scripts": {
@@ -9,9 +9,26 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MatrixMatt249/ionic-appauth.git"
+  },
+  "homepage": "https://github.com/MatrixMatt249/ionic-appauth#readme",
+  "keywords": [
+    "OAuth",
+    "AppAuth",
+    "JavaScript",
+    "Ionic",
+    "Cordova",
+    "OpenId"
+  ],
+  "author": {
+    "name": "Matthew Wieland"
+  },
+  "bugs": {
+    "url": "https://github.com/MatrixMatt249/ionic-appauth/issues"
+  },
+  "license": "MIT",
   "devDependencies": {
     "tslint": "^5.14.0",
     "tslint-eslint-rules": "^5.4.0",

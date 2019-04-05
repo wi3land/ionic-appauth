@@ -6,7 +6,7 @@ import { IonicAuthorizationRequestHandler, AUTHORIZATION_RESPONSE_KEY } from './
 import { Browser, DefaultBrowser } from "./auth-browser";
 import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 const TOKEN_RESPONSE_KEY = "token_response";
@@ -19,7 +19,7 @@ export class IonicAuth {
     protected configuration: AuthorizationServiceConfiguration | undefined;
     protected authConfig: IAuthConfig | undefined;
 
-    protected authSubject : Subject<IAuthAction> = new Subject<IAuthAction>();
+    protected authSubject : BehaviorSubject<IAuthAction> = new BehaviorSubject<IAuthAction>(AuthActionBuilder.Default());
     public authObservable : Observable<IAuthAction> = this.authSubject.asObservable();
 
     constructor(
@@ -68,11 +68,7 @@ export class IonicAuth {
     }
 
     public async getUserInfo<T>() : Promise<T>{
-        let token : TokenResponse | undefined = await this.getTokenFromObserver();
-
-        if(token != undefined && !token.isValid){
-            token = await this.requestNewToken(token);
-        }
+        let token : TokenResponse | undefined = await this.getValidToken();
 
         if(token != undefined){
             return this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);

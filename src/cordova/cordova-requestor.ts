@@ -5,9 +5,9 @@ import { HTTP, HTTPResponse } from '@ionic-native/http'
 export interface XhrSettings {
     url: string,
     dataType?: string,
-    method: "GET" | "POST" | "PUT" | "DELETE",
+    method?: "GET" | "POST" | "PUT" | "DELETE",
     data?: any,
-    headers: any// {key : string, value: any}
+    headers?: any// {key : string, value: any}
 }
 
 // REQUIRES CORDOVA PLUGINS
@@ -20,6 +20,9 @@ export class CordovaRequestor extends Requestor {
     }
 
     public async xhr<T>(settings: XhrSettings) : Promise<T> {
+        if(!settings.method)   
+            settings.method = "GET";
+
         await CordovaDocument.ready();
 
         switch(settings.method){
