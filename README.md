@@ -13,10 +13,16 @@ npm install ionic-appauth --save
 ```
 
 ## Examples
-Angular/Cordova : https://github.com/MatrixMatt249/ionic-appauth-ng-demo
+Angular/Cordova : https://github.com/wi3land/ionic-appauth-ng-demo
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* [AppAuth-JS](https://github.com/openid/AppAuth-JS)
+* [AppAuth-Ionic](https://github.com/Belicosus/AppAuth-Ionic)
