@@ -1,6 +1,10 @@
 import { AuthorizationServiceConfiguration, TokenResponse, Requestor } from '@openid/appauth';
 
-export class IonicUserInfoHandler {
+export interface UserInfoHandler {
+    performUserInfoRequest<T>(configuration: AuthorizationServiceConfiguration, token : TokenResponse): Promise<T>
+}
+
+export class IonicUserInfoHandler implements UserInfoHandler {
 
     constructor( 
         private requestor : Requestor

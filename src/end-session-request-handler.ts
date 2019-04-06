@@ -2,7 +2,11 @@ import { EndSessionRequest } from './end-session-request';
 import { AuthorizationServiceConfiguration, StringMap, BasicQueryStringUtils } from "@openid/appauth";
 import { Browser } from './auth-browser'
 
-export class IonicEndSessionHandler {
+export interface EndSessionHandler {
+  performEndSessionRequest(configuration: AuthorizationServiceConfiguration, request : EndSessionRequest): Promise<string | undefined>;
+}
+
+export class IonicEndSessionHandler implements EndSessionHandler {
 
     constructor(  
         private browser: Browser,

@@ -1,10 +1,11 @@
+import { AuthorizationRequestHandler } from '@openid/appauth';
 import { IAuthAction, AuthActionBuilder } from './auth-action';
-import { IonicUserInfoHandler } from './user-info-request-handler';
-import { IonicEndSessionHandler } from './end-session-request-handler';
+import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
+import { IonicEndSessionHandler, EndSessionHandler } from './end-session-request-handler';
 import { IAuthConfig } from './auth-configuration';
 import { IonicAuthorizationRequestHandler, AUTHORIZATION_RESPONSE_KEY } from './authorization-request-handler';
 import { Browser, DefaultBrowser } from "./auth-browser";
-import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor } from '@openid/appauth';
+import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor, TokenRequestHandler } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -12,10 +13,6 @@ import { take } from 'rxjs/operators';
 const TOKEN_RESPONSE_KEY = "token_response";
 
 export class IonicAuth {
-    protected tokenHandler: BaseTokenRequestHandler;
-    protected authorizationHandler: IonicAuthorizationRequestHandler;
-    protected endSessionHandler : IonicEndSessionHandler;
-    protected userInfoHandler : IonicUserInfoHandler;
     protected configuration: AuthorizationServiceConfiguration | undefined;
     protected authConfig: IAuthConfig | undefined;
 
@@ -25,12 +22,12 @@ export class IonicAuth {
     constructor(
         protected browser : Browser = new DefaultBrowser(),
         protected storage : StorageBackend = new LocalStorageBackend(),
-        protected requestor : Requestor = new JQueryRequestor()
+        protected requestor : Requestor = new JQueryRequestor(),
+        protected tokenHandler: TokenRequestHandler = new BaseTokenRequestHandler(requestor),
+        protected userInfoHandler: UserInfoHandler = new IonicUserInfoHandler(requestor),
+        protected authorizationHandler : AuthorizationRequestHandler =  new IonicAuthorizationRequestHandler(browser, storage),
+        protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser)
     ){
-        this.tokenHandler = new BaseTokenRequestHandler(this.requestor);
-        this.userInfoHandler = new IonicUserInfoHandler(this.requestor);
-        this.authorizationHandler = new IonicAuthorizationRequestHandler(this.browser, this.storage);
-        this.endSessionHandler = new IonicEndSessionHandler(this.browser);
         this.setupNotifier();
     }
 
@@ -41,13 +38,13 @@ export class IonicAuth {
         return this.authConfig;
     }
     
-    private setupNotifier(){
+    protected setupNotifier(){
         let notifier = new AuthorizationNotifier();
         this.authorizationHandler.setAuthorizationNotifier(notifier);
         notifier.setAuthorizationListener((request, response, error) => this.onNotification(request, response, error));
     }
 
-    private onNotification(request : AuthorizationRequest, response : AuthorizationResponse | null, error : AuthorizationError | null){
+    protected onNotification(request : AuthorizationRequest, response : AuthorizationResponse | null, error : AuthorizationError | null){
         let codeVerifier : string | undefined = (request.internal != undefined && this.getAuthConfig().usePkce) ? request.internal.code_verifier : undefined;
 
         if (response != null) {               
