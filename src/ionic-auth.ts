@@ -1,4 +1,4 @@
-import { AuthorizationRequestHandler } from '@openid/appauth';
+import { AuthorizationRequestHandler, TokenError } from '@openid/appauth';
 import { IAuthAction, AuthActionBuilder } from './auth-action';
 import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
 import { IonicEndSessionHandler, EndSessionHandler } from './end-session-request-handler';
@@ -7,8 +7,10 @@ import { IonicAuthorizationRequestHandler, AUTHORIZATION_RESPONSE_KEY } from './
 import { Browser, DefaultBrowser } from "./auth-browser";
 import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor, TokenRequestHandler } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ImplicitRequestHandler, ImplicitNotifier, IMPLICIT_RESPONSE_KEY } from './implicit-request-handler';
+import { ImplicitRequest, ImplicitRequestJson, ImplicitResponseType } from './implicit-request';
 
 const TOKEN_RESPONSE_KEY = "token_response";
 
@@ -25,7 +27,7 @@ export class IonicAuth {
         protected requestor : Requestor = new JQueryRequestor(),
         protected tokenHandler: TokenRequestHandler = new BaseTokenRequestHandler(requestor),
         protected userInfoHandler: UserInfoHandler = new IonicUserInfoHandler(requestor),
-        protected authorizationHandler : AuthorizationRequestHandler =  new IonicAuthorizationRequestHandler(browser, storage),
+        protected requestHandler : AuthorizationRequestHandler | ImplicitRequestHandler =  new IonicAuthorizationRequestHandler(browser, storage),
         protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser)
     ){
         this.setupNotifier();
@@ -39,12 +41,28 @@ export class IonicAuth {
     }
     
     protected setupNotifier(){
-        let notifier = new AuthorizationNotifier();
-        this.authorizationHandler.setAuthorizationNotifier(notifier);
-        notifier.setAuthorizationListener((request, response, error) => this.onNotification(request, response, error));
+        if(this.requestHandler instanceof AuthorizationRequestHandler){
+            let notifier = new AuthorizationNotifier();
+            this.requestHandler.setAuthorizationNotifier(notifier);
+            notifier.setAuthorizationListener((request, response, error) => this.onAuthorizationNotification(request, response, error));
+        }else{
+            let notifier = new ImplicitNotifier();
+            this.requestHandler.setImplicitNotifier(notifier);
+            notifier.setImplicitListener((request, response, error) => this.onImplicitNotification(request, response, error));
+        } 
     }
 
-    protected onNotification(request : AuthorizationRequest, response : AuthorizationResponse | null, error : AuthorizationError | null){
+    protected onImplicitNotification(request : ImplicitRequest , response : TokenResponse | null, error : TokenError | null){
+        if (response != null) {               
+            this.authSubject.next(AuthActionBuilder.SignInSuccess(response));
+        }else if(error != null){
+            throw new Error(error.errorDescription);
+        }else{
+            throw new Error("Unknown Error With Authentication");
+        }
+    }
+
+    protected onAuthorizationNotification(request : AuthorizationRequest , response : AuthorizationResponse | null, error : AuthorizationError | null){
         let codeVerifier : string | undefined = (request.internal != undefined && this.getAuthConfig().usePkce) ? request.internal.code_verifier : undefined;
 
         if (response != null) {               
@@ -95,8 +113,14 @@ export class IonicAuth {
 
     public async AuthorizationCallBack(url: string){
         this.browser.closeWindow();
-        await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
-        this.authorizationHandler.completeAuthorizationRequestIfPossible();
+       
+        if(this.requestHandler instanceof AuthorizationRequestHandler){  
+            await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
+            this.requestHandler.completeAuthorizationRequestIfPossible();
+        }else{
+            await this.storage.setItem(IMPLICIT_RESPONSE_KEY, url);
+            this.requestHandler.completeImplicitRequestIfPossible();
+        } 
     }
 
     public async EndSessionCallBack(){
@@ -128,9 +152,17 @@ export class IonicAuth {
     }
 
     protected async performAuthorizationRequest(loginHint?: string) : Promise<void> {
+        if(this.requestHandler instanceof AuthorizationRequestHandler){  
+            return this.requestHandler.performAuthorizationRequest(await this.getConfiguration(), await this.getAuthorizationRequest(loginHint)); 
+        }else{
+            return this.requestHandler.performImplicitRequest(await this.getConfiguration(), await this.getImplicitRequest(loginHint)); 
+        }        
+    }
+
+    protected async getAuthorizationRequest(loginHint?: string){
         let authConfig : IAuthConfig = this.getAuthConfig();
         let requestJson : AuthorizationRequestJson = {
-            response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
+            response_type: authConfig.response_type || AuthorizationRequest.RESPONSE_TYPE_CODE,
             client_id: authConfig.identity_client,
             redirect_uri: authConfig.redirect_url,
             scope: authConfig.scopes,
@@ -147,7 +179,25 @@ export class IonicAuth {
         if(authConfig.usePkce)
             await request.setupCodeVerifier();
 
-        return this.authorizationHandler.performAuthorizationRequest(await this.getConfiguration(), request); 
+        return request;
+    }
+
+    protected async getImplicitRequest(loginHint?: string){
+        let authConfig : IAuthConfig = this.getAuthConfig();
+        let requestJson : ImplicitRequestJson = {
+            response_type: authConfig.response_type || ImplicitResponseType.IdTokenToken,
+            client_id: authConfig.identity_client,
+            redirect_uri: authConfig.redirect_url,
+            scope: authConfig.scopes,
+            extras: authConfig.auth_extras
+        }
+
+        if(loginHint){
+            requestJson.extras = requestJson.extras || {};
+            requestJson.extras['login_hint'] = loginHint;
+        }
+
+        return new ImplicitRequest(requestJson, new DefaultCrypto());
     }
 
     protected async getConfiguration() : Promise<AuthorizationServiceConfiguration>{
@@ -173,6 +223,7 @@ export class IonicAuth {
           extras: (codeVerifier) ? { 
             "code_verifier": codeVerifier
           } : {}
+
         }
         
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
