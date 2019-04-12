@@ -234,7 +234,7 @@ export class IonicImplicitRequestHandler extends ImplicitRequestHandler {
 
     private getImplicitResponse(queryParams : StringMap): TokenResponse {
         let implicitResponseJSON : TokenResponseJson = {
-            access_token: queryParams['access_type'],
+            access_token: queryParams['access_token'],
             token_type: this.convertToTokenType(queryParams['token_type']),
             expires_in: +queryParams['expires_in'],
             refresh_token: queryParams['refresh_token'],
