@@ -16,7 +16,7 @@ export class IonicUserInfoHandler implements UserInfoHandler {
             dataType: 'json',
             method: 'GET',
             headers : {
-                "Authorization": `${token.tokenType} ${token.accessToken}`,
+                "Authorization": `${(token.tokenType == 'bearer') ? 'Bearer' : token.tokenType} ${token.accessToken}`,
                 "Content-Type": "application/json"
             } 
         }
