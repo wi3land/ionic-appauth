@@ -53,7 +53,8 @@ export class IonicAuth {
     }
 
     protected onImplicitNotification(request : ImplicitRequest , response : TokenResponse | null, error : TokenError | null){
-        if (response != null) {               
+        if (response != null) {   
+            this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(response.toJson()));            
             this.authSubject.next(AuthActionBuilder.SignInSuccess(response));
         }else if(error != null){
             throw new Error(error.errorDescription);
