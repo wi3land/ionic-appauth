@@ -121,14 +121,14 @@ export abstract class ImplicitRequestHandler {
 
   
   /**
-   * Completes the authorization request if necessary & when possible.
+   * Completes the Implicit request if necessary & when possible.
    */
   completeImplicitRequestIfPossible(): Promise<void> {
-    // call complete authorization if possible to see there might
+    // call complete Implicit if possible to see there might
     // be a response that needs to be delivered.
-    log(`Checking to see if there is an authorization response to be delivered.`);
+    log(`Checking to see if there is an Implicit response to be delivered.`);
     if (!this.notifier) {
-      log(`Notifier is not present on AuthorizationRequest handler.
+      log(`Notifier is not present on ImplicitRequest handler.
           No delivery of result will be possible`)
     }
     return this.completeImplicitRequest().then(result => {
