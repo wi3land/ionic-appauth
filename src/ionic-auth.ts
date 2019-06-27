@@ -264,7 +264,7 @@ export class IonicAuth {
         if(token == undefined)
             throw new Error("Unable To Obtain Token - No Token Available");
 
-        if(!token.isValid){
+        if(!token.isValid()){
             token = await this.requestNewToken(token);
         }
 
