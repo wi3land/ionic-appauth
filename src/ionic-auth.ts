@@ -52,9 +52,9 @@ export class IonicAuth {
         } 
     }
 
-    protected onImplicitNotification(request : ImplicitRequest , response : TokenResponse | null, error : TokenError | null){
+    protected async onImplicitNotification(request : ImplicitRequest , response : TokenResponse | null, error : TokenError | null){
         if (response != null) {   
-            this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(response.toJson()));            
+            await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(response.toJson()));            
             this.authSubject.next(AuthActionBuilder.SignInSuccess(response));
         }else if(error != null){
             throw new Error(error.errorDescription);
@@ -230,7 +230,7 @@ export class IonicAuth {
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
 
         if(token != undefined){
-            this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+            await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
             this.authSubject.next(AuthActionBuilder.SignInSuccess(token))
         }else{
             this.authSubject.next(AuthActionBuilder.SignOutFailed())
@@ -250,7 +250,7 @@ export class IonicAuth {
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
 
         if(token != undefined){
-            this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+            await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
             this.authSubject.next(AuthActionBuilder.RefreshSuccess(token))
         }else{
             this.storage.removeItem(TOKEN_RESPONSE_KEY);
