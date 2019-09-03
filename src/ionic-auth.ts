@@ -276,7 +276,7 @@ export class IonicAuth {
         // to specify a buffer parameter for token.isValid().
         if (authConfig.auth_extras) {
             if (authConfig.auth_extras.hasOwnProperty(IS_VALID_BUFFER_KEY)) {
-                isValidBuffer = parseInt(authConfig.auth_extras[IS_VALID_BUFFER_KEY]);
+                isValidBuffer = parseInt(authConfig.auth_extras[IS_VALID_BUFFER_KEY], 10);
             }
         }
 
