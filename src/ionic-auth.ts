@@ -13,7 +13,7 @@ import { ImplicitRequestHandler, ImplicitNotifier, IMPLICIT_RESPONSE_KEY } from 
 import { ImplicitRequest, ImplicitRequestJson, ImplicitResponseType } from './implicit-request';
 
 const TOKEN_RESPONSE_KEY = "token_response";
-const AUTH_EXPIRY_BUFFER = 10 * 60;  // 10 mins in seconds
+const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 const IS_VALID_BUFFER_KEY = 'isValidBuffer';
 
 export class IonicAuth {
