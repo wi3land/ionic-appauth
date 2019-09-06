@@ -13,8 +13,11 @@ import { ImplicitRequestHandler, ImplicitNotifier, IMPLICIT_RESPONSE_KEY } from 
 import { ImplicitRequest, ImplicitRequestJson, ImplicitResponseType } from './implicit-request';
 
 const TOKEN_RESPONSE_KEY = "token_response";
+const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
+const IS_VALID_BUFFER_KEY = 'isValidBuffer';
 
 export class IonicAuth {
+    
     protected configuration: AuthorizationServiceConfiguration | undefined;
     protected authConfig: IAuthConfig | undefined;
 
@@ -264,7 +267,20 @@ export class IonicAuth {
         if(token == undefined)
             throw new Error("Unable To Obtain Token - No Token Available");
 
-        if(!token.isValid()){
+        // The buffer parameter passed to token.isValid().
+        let isValidBuffer = AUTH_EXPIRY_BUFFER;
+
+        const authConfig : IAuthConfig = this.getAuthConfig();
+
+        // See if a IS_VALID_BUFFER_KEY is specified in the config extras,
+        // to specify a buffer parameter for token.isValid().
+        if (authConfig.auth_extras) {
+            if (authConfig.auth_extras.hasOwnProperty(IS_VALID_BUFFER_KEY)) {
+                isValidBuffer = parseInt(authConfig.auth_extras[IS_VALID_BUFFER_KEY], 10);
+            }
+        }
+
+        if(!token.isValid(isValidBuffer)){
             token = await this.requestNewToken(token);
         }
 
