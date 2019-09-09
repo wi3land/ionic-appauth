@@ -10,7 +10,7 @@ export enum AuthActions {
     RefreshSuccess = "Refresh Success",
     RefreshFailed = "Refesh Failed",
     AutoSignInFailed = "Auto Sign In Failed",
-    AuthSignInSuccess = "Auto Sign In Success",
+    AutoSignInSuccess = "Auto Sign In Success",
 }
 
 export interface IAuthAction {
@@ -65,7 +65,7 @@ export class AuthActionBuilder {
 
     public static AutoSignInSuccess(token : TokenResponse) : IAuthAction{
         return {
-            action : AuthActions.AuthSignInSuccess,
+            action : AuthActions.AutoSignInSuccess,
             tokenResponse : token
         }
     }

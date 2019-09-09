@@ -1,5 +1,6 @@
+import { IAuthSession, DefaultAuthSession } from './auth-session';
 import { AuthorizationRequestHandler, TokenError } from '@openid/appauth';
-import { IAuthAction, AuthActionBuilder } from './auth-action';
+import { IAuthAction, AuthActionBuilder, AuthActions } from './auth-action';
 import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
 import { IonicEndSessionHandler, EndSessionHandler } from './end-session-request-handler';
 import { IAuthConfig } from './auth-configuration';
@@ -8,7 +9,7 @@ import { Browser, DefaultBrowser } from "./auth-browser";
 import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor, TokenRequestHandler } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 import { ImplicitRequestHandler, ImplicitNotifier, IMPLICIT_RESPONSE_KEY } from './implicit-request-handler';
 import { ImplicitRequest, ImplicitRequestJson, ImplicitResponseType } from './implicit-request';
 
@@ -17,12 +18,13 @@ const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 const IS_VALID_BUFFER_KEY = 'isValidBuffer';
 
 export class IonicAuth {
-    
+
     protected configuration: AuthorizationServiceConfiguration | undefined;
     protected authConfig: IAuthConfig | undefined;
-
     protected authSubject : BehaviorSubject<IAuthAction> = new BehaviorSubject<IAuthAction>(AuthActionBuilder.Default());
-    public authObservable : Observable<IAuthAction> = this.authSubject.asObservable();
+    public authObservable : Observable<IAuthAction> = this.authSubject.asObservable()
+                                                                        .pipe(map((action : IAuthAction) => this.authObservableDefaultActions(action)));
+
 
     constructor(
         protected browser : Browser = new DefaultBrowser(),
@@ -31,7 +33,8 @@ export class IonicAuth {
         protected tokenHandler: TokenRequestHandler = new BaseTokenRequestHandler(requestor),
         protected userInfoHandler: UserInfoHandler = new IonicUserInfoHandler(requestor),
         protected requestHandler : AuthorizationRequestHandler | ImplicitRequestHandler =  new IonicAuthorizationRequestHandler(browser, storage),
-        protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser)
+        protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser),
+        public authSession: IAuthSession = new DefaultAuthSession()
     ){
         this.setupNotifier();
     }
@@ -90,7 +93,8 @@ export class IonicAuth {
         let token : TokenResponse | undefined = await this.getValidToken();
 
         if(token != undefined){
-            return this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);
+            this.authSession.user = this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);
+            return this.authSession.user;
         }
         else{
             throw new Error("Unable To Obtain User Info - No Token Available");
@@ -134,7 +138,7 @@ export class IonicAuth {
     }
 
     protected async performEndSessionRequest() : Promise<void>{
-        let token : TokenResponse | undefined = await this.getTokenFromObserver();
+        let token : TokenResponse | undefined = this.authSession.token;
 
         if(token != undefined){
             let requestJson : EndSessionRequestJson = {
@@ -262,7 +266,7 @@ export class IonicAuth {
     }
 
     public async getValidToken(){
-        let token : TokenResponse | undefined = await this.getTokenFromObserver();
+        let token : TokenResponse | undefined = this.authSession.token;
 
         if(token == undefined)
             throw new Error("Unable To Obtain Token - No Token Available");
@@ -289,10 +293,47 @@ export class IonicAuth {
 
     protected async requestNewToken(token: TokenResponse){
         await this.requestRefreshToken(token);
-        return this.getTokenFromObserver();          
+        return this.authSession.token;       
     }
 
-    protected async getTokenFromObserver() : Promise<TokenResponse | undefined>{
+    protected async getTokenFromObserver() : Promise<TokenResponse | undefined> {
         return this.authSubject.pipe(take(1)).toPromise().then((action : IAuthAction) => action.tokenResponse);
+    }
+
+    private authObservableDefaultActions(action : IAuthAction) : IAuthAction {
+        this.authSession.token = action.tokenResponse;
+
+        switch(action.action){
+            case AuthActions.Default: 
+                this.authSession.isAuthenticated = false;
+                break;
+            case AuthActions.SignInSuccess : 
+            case AuthActions.AutoSignInSuccess : 
+                this.authSession.isAuthenticated = true;
+                this.authSession.onSignInSuccessful();
+                break;
+            case AuthActions.RefreshSuccess : 
+                this.authSession.isAuthenticated = true;
+                this.authSession.onRefreshSuccessful();
+                break;
+            case AuthActions.SignOutSuccess : 
+                this.authSession.isAuthenticated = false;
+                this.authSession.onSignOutSuccessful();
+                break;
+            case AuthActions.SignInFailed : 
+            case AuthActions.AutoSignInFailed : 
+                this.authSession.isAuthenticated = false;
+                this.authSession.onSignInFailure();
+                break;
+            case AuthActions.RefreshFailed : 
+                this.authSession.isAuthenticated = false;
+                this.authSession.onRefreshFailure();
+                break;
+            case AuthActions.SignOutFailed : 
+                this.authSession.isAuthenticated = false;
+                this.authSession.onSignOutFailure();
+                break;
+        }
+        return action;
     }
 }
