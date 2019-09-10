@@ -310,30 +310,44 @@ export class IonicAuth {
             case AuthActions.SignInSuccess : 
             case AuthActions.AutoSignInSuccess : 
                 this.authSession.isAuthenticated = true;
-                this.authSession.onSignInSuccessful();
+                this.onSignInSuccessful(action);
                 break;
             case AuthActions.RefreshSuccess : 
                 this.authSession.isAuthenticated = true;
-                this.authSession.onRefreshSuccessful();
+                this.onRefreshSuccessful(action);
                 break;
             case AuthActions.SignOutSuccess : 
                 this.authSession.isAuthenticated = false;
-                this.authSession.onSignOutSuccessful();
+                this.onSignOutSuccessful(action);
                 break;
             case AuthActions.SignInFailed : 
             case AuthActions.AutoSignInFailed : 
                 this.authSession.isAuthenticated = false;
-                this.authSession.onSignInFailure();
+                this.onSignInFailure(action);
                 break;
             case AuthActions.RefreshFailed : 
                 this.authSession.isAuthenticated = false;
-                this.authSession.onRefreshFailure();
+                this.onRefreshFailure(action);
                 break;
             case AuthActions.SignOutFailed : 
                 this.authSession.isAuthenticated = false;
-                this.authSession.onSignOutFailure();
+                this.onSignOutFailure(action);
                 break;
         }
         return action;
+    }
+
+    //Auth Events To Be Overriden
+    protected onSignInSuccessful(action: IAuthAction): void {
+    }
+    protected onSignOutSuccessful(action: IAuthAction): void {
+    }
+    protected onRefreshSuccessful(action: IAuthAction): void {
+    }
+    protected onSignInFailure(action: IAuthAction): void {
+    }
+    protected onSignOutFailure(action: IAuthAction): void {
+    }
+    protected onRefreshFailure(action: IAuthAction): void {
     }
 }
