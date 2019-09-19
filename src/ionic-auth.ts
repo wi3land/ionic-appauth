@@ -119,11 +119,17 @@ export class IonicAuth implements BaseIonicAuth {
     }
 
     public async signIn(loginHint?: string) {
-        await this.performAuthorizationRequest(loginHint);
+        await this.performAuthorizationRequest(loginHint).catch((response) => { 
+            this.authSubject.next(AuthActionBuilder.SignInFailed(response));
+            throw response;
+        })
     }
 
     public async signOut(){
-        await this.performEndSessionRequest();
+        await this.performEndSessionRequest().catch((response) => { 
+            this.authSubject.next(AuthActionBuilder.SignOutFailed(response));
+            throw response;
+        })
     }
 
     public async getUserInfo<T>() : Promise<T>{
@@ -152,7 +158,7 @@ export class IonicAuth implements BaseIonicAuth {
         }
 
         if(!token){
-            this.authSubject.next(AuthActionBuilder.AutoSignInFailed());
+            this.authSubject.next(AuthActionBuilder.AutoSignInFailed("No Token Available"));
         }else{
             this.authSubject.next(AuthActionBuilder.AutoSignInSuccess(token));
         }   
@@ -186,7 +192,7 @@ export class IonicAuth implements BaseIonicAuth {
             }
     
             let request : EndSessionRequest = new EndSessionRequest(requestJson);
-            let returnedUrl : string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.getConfiguration(), request); 
+            let returnedUrl : string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.getConfiguration(), request);
 
             //callback may come from showWindow or via another method
             if(returnedUrl != undefined){
@@ -273,13 +279,13 @@ export class IonicAuth implements BaseIonicAuth {
 
         }
         
-        let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
-
-        if(token != undefined){
+        try{
+            let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
             await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
             this.authSubject.next(AuthActionBuilder.SignInSuccess(token))
-        }else{
-            this.authSubject.next(AuthActionBuilder.SignOutFailed())
+        }catch(error){
+            this.authSubject.next(AuthActionBuilder.SignInFailed(error))
+            throw error;
         }
     }
     
@@ -293,14 +299,14 @@ export class IonicAuth implements BaseIonicAuth {
           client_id: authConfig.identity_client,
         }    
         
-        let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
-
-        if(token != undefined){
+        try{
+            let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON))
             await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
-            this.authSubject.next(AuthActionBuilder.RefreshSuccess(token))
-        }else{
+            this.authSubject.next(AuthActionBuilder.RefreshSuccess(token));
+        }catch(error){
             this.storage.removeItem(TOKEN_RESPONSE_KEY);
-            this.authSubject.next(AuthActionBuilder.RefreshFailed())
+            this.authSubject.next(AuthActionBuilder.RefreshFailed(error))
+            throw error;
         }
     }
 

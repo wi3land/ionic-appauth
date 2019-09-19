@@ -16,6 +16,7 @@ export enum AuthActions {
 export interface IAuthAction {
     action : AuthActions,
     tokenResponse ?: TokenResponse
+    error ?: string;
 }
 
 export class AuthActionBuilder {
@@ -31,9 +32,10 @@ export class AuthActionBuilder {
         }
     }
 
-    public static SignOutFailed() : IAuthAction{
+    public static SignOutFailed(error : any) : IAuthAction{
         return {
             action : AuthActions.SignOutFailed,
+            error : JSON.stringify(error)
         }
     }
 
@@ -44,9 +46,10 @@ export class AuthActionBuilder {
         }
     }
 
-    public static RefreshFailed() : IAuthAction{
+    public static RefreshFailed(error : any) : IAuthAction{
         return {
-            action : AuthActions.RefreshFailed
+            action : AuthActions.RefreshFailed,
+            error : JSON.stringify(error)
         }
     }
 
@@ -57,9 +60,10 @@ export class AuthActionBuilder {
         }
     }
 
-    public static SignInFailed() : IAuthAction{
+    public static SignInFailed(error : any) : IAuthAction{
         return {
-            action : AuthActions.AutoSignInFailed
+            action : AuthActions.AutoSignInFailed,
+            error : JSON.stringify(error)
         }
     }
 
@@ -70,9 +74,10 @@ export class AuthActionBuilder {
         }
     }
 
-    public static AutoSignInFailed() : IAuthAction{
+    public static AutoSignInFailed(error : any) : IAuthAction{
         return {
             action : AuthActions.AutoSignInFailed,
+            error : JSON.stringify(error)
         }
     }
 }
