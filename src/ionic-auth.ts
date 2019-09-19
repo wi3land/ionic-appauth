@@ -1,4 +1,3 @@
-import { IAuthSession, DefaultAuthSession } from './auth-session';
 import { AuthorizationRequestHandler, TokenError } from '@openid/appauth';
 import { IAuthAction, AuthActionBuilder, AuthActions } from './auth-action';
 import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
@@ -9,7 +8,7 @@ import { Browser, DefaultBrowser } from "./auth-browser";
 import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor, TokenRequestHandler } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { ImplicitRequestHandler, ImplicitNotifier, IMPLICIT_RESPONSE_KEY } from './implicit-request-handler';
 import { ImplicitRequest, ImplicitRequestJson, ImplicitResponseType } from './implicit-request';
 
@@ -17,13 +16,52 @@ const TOKEN_RESPONSE_KEY = "token_response";
 const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 const IS_VALID_BUFFER_KEY = 'isValidBuffer';
 
-export class IonicAuth {
+export interface IIonicAuth {
+    signIn(loginHint?: string): void;
+    signOut(): void;
+    getUserInfo<T>(): Promise<T>;
+    startUpAsync(): Promise<void>;
+    AuthorizationCallBack(url: string): void;
+    EndSessionCallBack(): void;
+    requestRefreshToken(tokenResponse: TokenResponse): Promise<void>;
+    getValidToken(): void;
+}
+
+export class BaseIonicAuth implements IIonicAuth {
+    signIn(loginHint?: string): void {
+        throw new Error("Method not implemented.");
+    }    
+    signOut(): void {
+        throw new Error("Method not implemented.");
+    }
+    getUserInfo<T>(): Promise<T> {
+        throw new Error("Method not implemented.");
+    }
+    startUpAsync(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    AuthorizationCallBack(url: string): void {
+        throw new Error("Method not implemented.");
+    }
+    EndSessionCallBack(): void {
+        throw new Error("Method not implemented.");
+    }
+    requestRefreshToken(tokenResponse: TokenResponse): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    getValidToken(): void {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export const NullIonicAuthObject : IIonicAuth = new BaseIonicAuth();
+
+export class IonicAuth implements BaseIonicAuth {
 
     protected configuration: AuthorizationServiceConfiguration | undefined;
     protected authConfig: IAuthConfig | undefined;
     protected authSubject : BehaviorSubject<IAuthAction> = new BehaviorSubject<IAuthAction>(AuthActionBuilder.Default());
-    public authObservable : Observable<IAuthAction> = this.authSubject.asObservable()
-                                                                        .pipe(map((action : IAuthAction) => this.authObservableDefaultActions(action)));
+    public authObservable : Observable<IAuthAction> = this.authSubject.asObservable();
 
 
     constructor(
@@ -33,8 +71,7 @@ export class IonicAuth {
         protected tokenHandler: TokenRequestHandler = new BaseTokenRequestHandler(requestor),
         protected userInfoHandler: UserInfoHandler = new IonicUserInfoHandler(requestor),
         protected requestHandler : AuthorizationRequestHandler | ImplicitRequestHandler =  new IonicAuthorizationRequestHandler(browser, storage),
-        protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser),
-        public authSession: IAuthSession = new DefaultAuthSession()
+        protected endSessionHandler : EndSessionHandler =  new IonicEndSessionHandler(browser)
     ){
         this.setupNotifier();
     }
@@ -93,8 +130,7 @@ export class IonicAuth {
         let token : TokenResponse | undefined = await this.getValidToken();
 
         if(token != undefined){
-            this.authSession.user = this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);
-            return this.authSession.user;
+            return this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);
         }
         else{
             throw new Error("Unable To Obtain User Info - No Token Available");
@@ -102,6 +138,9 @@ export class IonicAuth {
     }
 
     public async startUpAsync(){
+        //subscribing to auth observable for event hooks
+        this.authObservable.subscribe((action : IAuthAction) => this.authObservableEvents(action));
+
         let token : TokenResponse | undefined;
         let tokenResponseString : string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
 
@@ -138,7 +177,7 @@ export class IonicAuth {
     }
 
     protected async performEndSessionRequest() : Promise<void>{
-        let token : TokenResponse | undefined = this.authSession.token;
+        let token : TokenResponse | undefined = await this.getTokenFromObserver();   
 
         if(token != undefined){
             let requestJson : EndSessionRequestJson = {
@@ -266,7 +305,7 @@ export class IonicAuth {
     }
 
     public async getValidToken(){
-        let token : TokenResponse | undefined = this.authSession.token;
+        let token : TokenResponse | undefined = await this.getTokenFromObserver();   
 
         if(token == undefined)
             throw new Error("Unable To Obtain Token - No Token Available");
@@ -291,46 +330,37 @@ export class IonicAuth {
         return token;
     }
 
-    protected async requestNewToken(token: TokenResponse){
+    protected async requestNewToken(token: TokenResponse) : Promise<TokenResponse | undefined>  {
         await this.requestRefreshToken(token);
-        return this.authSession.token;       
+        return this.getTokenFromObserver();   
     }
 
     protected async getTokenFromObserver() : Promise<TokenResponse | undefined> {
         return this.authSubject.pipe(take(1)).toPromise().then((action : IAuthAction) => action.tokenResponse);
     }
 
-    private authObservableDefaultActions(action : IAuthAction) : IAuthAction {
-        this.authSession.token = action.tokenResponse;
-
+    private authObservableEvents(action : IAuthAction) : IAuthAction {
         switch(action.action){
             case AuthActions.Default: 
-                this.authSession.isAuthenticated = false;
                 break;
             case AuthActions.SignInSuccess : 
             case AuthActions.AutoSignInSuccess : 
-                this.authSession.isAuthenticated = true;
                 this.onSignInSuccessful(action);
                 break;
             case AuthActions.RefreshSuccess : 
-                this.authSession.isAuthenticated = true;
                 this.onRefreshSuccessful(action);
                 break;
             case AuthActions.SignOutSuccess : 
-                this.authSession.isAuthenticated = false;
                 this.onSignOutSuccessful(action);
                 break;
             case AuthActions.SignInFailed : 
             case AuthActions.AutoSignInFailed : 
-                this.authSession.isAuthenticated = false;
                 this.onSignInFailure(action);
                 break;
             case AuthActions.RefreshFailed : 
-                this.authSession.isAuthenticated = false;
                 this.onRefreshFailure(action);
                 break;
             case AuthActions.SignOutFailed : 
-                this.authSession.isAuthenticated = false;
                 this.onSignOutFailure(action);
                 break;
         }
@@ -351,3 +381,4 @@ export class IonicAuth {
     protected onRefreshFailure(action: IAuthAction): void {
     }
 }
+

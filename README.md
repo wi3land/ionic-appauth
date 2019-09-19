@@ -13,6 +13,7 @@ npm install ionic-appauth --save
 ```
 
 ## Examples
+React/Capacitor : https://github.com/wi3land/ionic-appauth-react-demo - Still In Progress<br />
 Angular/Cordova : https://github.com/wi3land/ionic-appauth-ng-demo<br />
 Angular/Capacitor : https://github.com/wi3land/ionic-appauth-capacitor-demo
 
