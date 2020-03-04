@@ -110,7 +110,8 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
 
     private getQueryParams(authResponse: string | null) : StringMap {
         if(authResponse != null){
-            let parts = authResponse.split('?');
+            let querySide : string = authResponse.split('#')[0];
+            let parts: string[] = querySide.split('?');
             if (parts.length !== 2) throw new Error("Invalid auth response string");
             let hash = parts[1];
             return this.utils.parseQueryString(hash);

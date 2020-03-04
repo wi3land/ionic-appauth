@@ -1,4 +1,3 @@
-import { IAuthAction } from './auth-action';
 import { TokenResponse } from '@openid/appauth';
 
 export enum AuthActions {
