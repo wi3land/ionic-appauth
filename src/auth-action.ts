@@ -13,7 +13,7 @@ export enum AuthActions {
 }
 
 export interface IAuthAction {
-    action : AuthActions,
+    action : string,
     tokenResponse ?: TokenResponse
     error ?: string;
 }
