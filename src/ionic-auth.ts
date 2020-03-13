@@ -169,10 +169,10 @@ export class IonicAuth implements BaseIonicAuth {
        
         if(this.requestHandler instanceof AuthorizationRequestHandler){  
             await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
-            this.requestHandler.completeAuthorizationRequestIfPossible();
+            return this.requestHandler.completeAuthorizationRequestIfPossible();
         }else{
             await this.storage.setItem(IMPLICIT_RESPONSE_KEY, url);
-            this.requestHandler.completeImplicitRequestIfPossible();
+            return this.requestHandler.completeImplicitRequestIfPossible();
         } 
     }
 
