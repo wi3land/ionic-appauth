@@ -8,7 +8,7 @@ export class CapacitorStorage implements StorageBackend {
       throw new Error("Capacitor Storage Is Undefined!");
 
     let returned = await Plugins.Storage.get({ key: name });
-    return returned.value;
+    return (returned.value == null) ? "" : returned.value;
   }  
   
   removeItem(name: string): Promise<void> {

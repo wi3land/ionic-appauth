@@ -1,16 +1,16 @@
-import {
-    AuthorizationRequestHandler,
-    AuthorizationRequest,
-    AuthorizationServiceConfiguration,
-    AuthorizationRequestResponse,
+import { 
+    AuthorizationRequestHandler, 
+    StorageBackend, 
     BasicQueryStringUtils,
-    AuthorizationResponse,
-    AuthorizationError,
-    AuthorizationErrorJson,
-    AuthorizationResponseJson,
-    DefaultCrypto,
-    StorageBackend,
-    StringMap
+    DefaultCrypto, 
+    AuthorizationServiceConfiguration, 
+    AuthorizationRequest, 
+    AuthorizationRequestResponse, 
+    StringMap, 
+    AuthorizationError, 
+    AuthorizationErrorJson, 
+    AuthorizationResponse, 
+    AuthorizationResponseJson 
 } from "@openid/appauth";
 
 import { Browser } from "./auth-browser";

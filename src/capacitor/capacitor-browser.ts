@@ -1,14 +1,15 @@
 import { Browser } from '../auth-browser';
-import { Plugins, BrowserOpenOptions } from '@capacitor/core';
+import { Plugins, BrowserOpenOptions, Capacitor } from '@capacitor/core';
 
 export class CapacitorBrowser extends Browser {
     public closeWindow(): void | Promise<void> {
         if(!Plugins.Browser)
             throw new Error("Capacitor Browser Is Undefined!");
             
-        Plugins.Browser.close();
+        if(Capacitor.platform !== 'android'){
+            Plugins.Browser.close();
+        }       
     }
-
 
     public async showWindow(url: string, callbackUrl?: string): Promise<string | undefined> {
         let options : BrowserOpenOptions = {
@@ -19,8 +20,12 @@ export class CapacitorBrowser extends Browser {
         if(!Plugins.Browser)
             throw new Error("Capacitor Browser Is Undefined!");
             
+        Plugins.Browser.addListener("browserFinished", (info: any) => {
+            this.onCloseFunction();
+        });
+
         Plugins.Browser.open(options);
          
         return ;
-    }    
+    } 
 }

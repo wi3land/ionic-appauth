@@ -13,6 +13,5 @@ export interface IAuthConfig {
     end_session_redirect_url: string, 
     scopes: string,
     usePkce : boolean,
-    response_type?: string,
-    auth_extras?: StringMap
+    response_type?: string
 }

@@ -8,8 +8,8 @@ export enum AuthActions {
     SignOutFailed = "Sign Out Failed",
     RefreshSuccess = "Refresh Success",
     RefreshFailed = "Refesh Failed",
-    AutoSignInFailed = "Auto Sign In Failed",
-    AutoSignInSuccess = "Auto Sign In Success",
+    SignInFromStorageSuccess = "Sign In From Storage Success",
+    SignInFromStorageFailed = "Sign In From Storage Failed"
 }
 
 export interface IAuthAction {
@@ -61,21 +61,21 @@ export class AuthActionBuilder {
 
     public static SignInFailed(error : any) : IAuthAction{
         return {
-            action : AuthActions.AutoSignInFailed,
+            action : AuthActions.SignInFailed,
             error : JSON.stringify(error)
         }
     }
 
-    public static AutoSignInSuccess(token : TokenResponse) : IAuthAction{
+    public static SignInFromStorageSuccess(token : TokenResponse) : IAuthAction{
         return {
-            action : AuthActions.AutoSignInSuccess,
+            action : AuthActions.SignInFromStorageSuccess,
             tokenResponse : token
         }
     }
 
-    public static AutoSignInFailed(error : any) : IAuthAction{
+    public static SignInFromStorageFailed(error : any) : IAuthAction{
         return {
-            action : AuthActions.AutoSignInFailed,
+            action : AuthActions.SignInFromStorageFailed,
             error : JSON.stringify(error)
         }
     }
