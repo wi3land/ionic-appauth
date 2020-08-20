@@ -1,4 +1,4 @@
-import { CordovaDocument } from './index';
+import { CordovaDocument } from './cordova-document';
 import { StorageBackend } from '@openid/appauth';
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage'
 
@@ -22,7 +22,7 @@ export class CordovaSecureStorage extends StorageBackend {
     public async getItem(name: string): Promise<string | null> {
         await CordovaDocument.ready();
         return SecureStorage.create(this.KEYSTORE).then((store) => {
-            return store.get(name);
+            return store.get(name).catch(() => null);
         })
         .catch(() => {
             return this.getTemp(name);

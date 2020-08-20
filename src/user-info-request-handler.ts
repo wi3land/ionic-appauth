@@ -1,7 +1,7 @@
 import { AuthorizationServiceConfiguration, TokenResponse, Requestor } from '@openid/appauth';
 
 export interface UserInfoHandler {
-    performUserInfoRequest<T>(configuration: AuthorizationServiceConfiguration, token : TokenResponse): Promise<T>
+    performUserInfoRequest(configuration: AuthorizationServiceConfiguration, token : TokenResponse): Promise<any>
 }
 
 export class IonicUserInfoHandler implements UserInfoHandler {
@@ -10,7 +10,7 @@ export class IonicUserInfoHandler implements UserInfoHandler {
         private requestor : Requestor
         ) {}
 
-    public async performUserInfoRequest<T>(configuration: AuthorizationServiceConfiguration, token : TokenResponse): Promise<T> {
+    public async performUserInfoRequest(configuration: AuthorizationServiceConfiguration, token : TokenResponse): Promise<any> {
         let settings : JQueryAjaxSettings = {
             url : configuration.userInfoEndpoint,
             dataType: 'json',
@@ -21,6 +21,6 @@ export class IonicUserInfoHandler implements UserInfoHandler {
             } 
         }
 
-        return this.requestor.xhr<T>(settings);
+        return this.requestor.xhr(settings);
     }
 }

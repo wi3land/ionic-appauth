@@ -1,6 +1,6 @@
 {
   "name": "ionic-appauth",
-  "version": "0.6.0",
+  "version": "0.6.5",
   "description": "Intergration for OpenId/AppAuth-JS into Ionic V3/4/5",
   "main": "lib/index.js",
   "scripts": {
@@ -42,7 +42,8 @@
   ],
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@openid/appauth": "^1.2.8"
+    "@openid/appauth": "^1.2.8",
+    "guid-typescript": "^1.0.9"
   },
   "optionalDependencies": {
     "@capacitor/core": "^2.4.0",

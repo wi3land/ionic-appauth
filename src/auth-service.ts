@@ -1,4 +1,4 @@
-import { AuthSubject, AuthObserver } from './auth-subject';
+import { AuthSubject } from './auth-subject';
 import { AuthorizationRequestHandler, StringMap } from '@openid/appauth';
 import { IAuthAction, AuthActionBuilder } from './auth-action';
 import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
@@ -8,77 +8,95 @@ import { IonicAuthorizationRequestHandler, AUTHORIZATION_RESPONSE_KEY } from './
 import { Browser, DefaultBrowser } from "./auth-browser";
 import { StorageBackend, Requestor, BaseTokenRequestHandler, AuthorizationServiceConfiguration, AuthorizationNotifier, TokenResponse, AuthorizationRequestJson, AuthorizationRequest, DefaultCrypto, GRANT_TYPE_AUTHORIZATION_CODE, TokenRequestJson, TokenRequest, GRANT_TYPE_REFRESH_TOKEN, AuthorizationResponse, AuthorizationError, LocalStorageBackend, JQueryRequestor, TokenRequestHandler } from '@openid/appauth';
 import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
-import { ActionLogger } from './auth-action-logger';
+import { BaseAuthObserver, AuthObserver,ActionHistoryObserver, SessionObserver  } from './auth-observer';
 
 const TOKEN_RESPONSE_KEY = "token_response";
 const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 
 export interface IAuthService {
-    setAuthConfig(authConfig: IAuthConfig) : void; 
     signIn(auth_extras?: StringMap): void;
     signOut(): void;
-    getUserInfo<T>(): Promise<T>;
-    handleCallback(callbackUrl: string): boolean;
-    requestRefreshToken(tokenResponse: TokenResponse): void;
-    signInFromStorage() : void;
-    getValidToken(buffer?: number): Promise<TokenResponse | undefined>;
+    refreshToken(): void;
+    loadUserInfo(buffer?: number) : void;
+    handleCallback(callbackUrl: string): void;
+    loadTokenFromStorage() : void;
+    getValidToken(buffer?: number) : Promise<TokenResponse>;
+    addActionObserver(observer : BaseAuthObserver): void;
+    addActionListener(func: (action : IAuthAction) => void): AuthObserver
+    removeActionObserver(observer : BaseAuthObserver) : void;
 }
 
 export class AuthService implements IAuthService {
-
-    private configuration: AuthorizationServiceConfiguration | undefined;
-    private authConfig: IAuthConfig | undefined;
-    private authSubject: AuthSubject = new AuthSubject();
-    private actionHistory: IAuthAction[] = [];
+    private _configuration?: AuthorizationServiceConfiguration;
+    private _authConfig?: IAuthConfig;
+    private _authSubject: AuthSubject = new AuthSubject();
+    private _actionHistory: ActionHistoryObserver = new ActionHistoryObserver();
+    private _session: SessionObserver = new SessionObserver();
 
     protected tokenHandler: TokenRequestHandler;
     protected userInfoHandler: UserInfoHandler;
     protected requestHandler : AuthorizationRequestHandler;
     protected endSessionHandler : EndSessionHandler;
-
+    
     constructor(
         protected browser : Browser = new DefaultBrowser(),
         protected storage : StorageBackend = new LocalStorageBackend(),
-        protected requestor : Requestor = new JQueryRequestor(),
-        protected logger : ActionLogger = new ActionLogger()
+        protected requestor : Requestor = new JQueryRequestor()
     ){
         this.tokenHandler = new BaseTokenRequestHandler(requestor);
         this.userInfoHandler = new IonicUserInfoHandler(requestor);
         this.requestHandler =  new IonicAuthorizationRequestHandler(browser, storage);
         this.endSessionHandler =  new IonicEndSessionHandler(browser);
 
-        this.setupNotifier();
-        this.setupActionHistory();
-        this.setupLogging();
+        this.setupAuthorizationNotifier();
+        this.addActionObserver(this._actionHistory);
+        this.addActionObserver(this._session);
     }
 
-    protected getAuthConfig() : IAuthConfig {
-        if(!this.authConfig)
+    get authConfig(): IAuthConfig {
+        if(!this._authConfig)
             throw new Error("AuthConfig Not Defined");
 
-        return this.authConfig;
+        return this._authConfig;
     }
 
-    public setAuthConfig(authConfig: IAuthConfig) : void {
-        this.authConfig = authConfig;
+    set authConfig(value: IAuthConfig) {
+        this._authConfig = value;
+    }
+
+    get configuration(): Promise<AuthorizationServiceConfiguration> {
+        if(!this._configuration){
+            return AuthorizationServiceConfiguration.fetchFromIssuer(this.authConfig.server_host, this.requestor)
+                        .catch(()=> { throw new Error("Unable To Obtain Server Configuration"); });
+        }
+        
+        if(this._configuration != undefined){
+            return Promise.resolve(this._configuration);
+        }else{
+            throw new Error("Unable To Obtain Server Configuration");
+        }
+    }
+
+    get history() : IAuthAction[] {
+        return this._actionHistory.history.slice(0);
+    }
+
+    get session() {
+        return this._session.session;
+    }
+
+    protected notifyActionListers(action: IAuthAction){
+        this._authSubject.notify(action);
     }
     
-    protected setupNotifier(){
+    protected setupAuthorizationNotifier(){
         let notifier = new AuthorizationNotifier();
         this.requestHandler.setAuthorizationNotifier(notifier);
         notifier.setAuthorizationListener((request, response, error) => this.onAuthorizationNotification(request, response, error));
     }
 
-    private setupActionHistory(){
-        this.authSubject.attach(new AuthObserver(this.actionHistory.push));
-    }
-
-    private setupLogging(){
-        this.authSubject.attach(new AuthObserver(this.logger.log));
-    }
-
     protected onAuthorizationNotification(request : AuthorizationRequest , response : AuthorizationResponse | null, error : AuthorizationError | null){
-        let codeVerifier : string | undefined = (request.internal != undefined && this.getAuthConfig().usePkce) ? request.internal.code_verifier : undefined;
+        let codeVerifier : string | undefined = (request.internal != undefined && this.authConfig.pkce) ? request.internal.code_verifier : undefined;
 
         if (response != null) {               
             this.requestAccessToken(response.code, codeVerifier);
@@ -89,61 +107,6 @@ export class AuthService implements IAuthService {
         }
     }
 
-    public async signInFromStorage() : Promise<void> {
-        let token : TokenResponse | undefined;
-        let tokenResponseString : string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
-
-        if(tokenResponseString != null){
-            token = new TokenResponse(JSON.parse(tokenResponseString));
-            if(token && !token.isValid()){
-                token = await this.requestNewToken(token);
-            }
-        }
-
-        if(!token){
-            this.authSubject.notify(AuthActionBuilder.SignInFromStorageFailed("No Token Available"));
-        }else{
-            this.authSubject.notify(AuthActionBuilder.SignInFromStorageSuccess(token));
-        }   
-    }
-
-    public async signIn(auth_extras?: StringMap) {
-        await this.performAuthorizationRequest(auth_extras).catch((response) => { 
-            this.authSubject.notify(AuthActionBuilder.SignInFailed(response));
-        })
-    }
-
-    public async signOut(){
-        await this.performEndSessionRequest().catch((response) => { 
-            this.authSubject.notify(AuthActionBuilder.SignOutFailed(response));
-        })
-    }
-
-    public async getUserInfo<T>() : Promise<T>{
-        let token : TokenResponse | undefined = await this.getValidToken();
-
-        if(token != undefined){
-            return this.userInfoHandler.performUserInfoRequest<T>(await this.getConfiguration(), token);
-        }
-        else{
-            throw new Error("Unable To Obtain User Info - No Token Available");
-        } 
-    }
-
-    public handleCallback(callbackUrl: string): boolean {
-        if ((callbackUrl).indexOf(this.getAuthConfig().redirect_url) === 0) {
-          this.AuthorizationCallBack(callbackUrl);
-          return true;
-        }
-    
-        if ((callbackUrl).indexOf(this.getAuthConfig().end_session_redirect_url) === 0) {
-          this.EndSessionCallBack();
-          return true;
-        }
-
-        return false;
-      }
-
     protected async AuthorizationCallBack(url: string){
         this.browser.closeWindow();
         await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
@@ -153,20 +116,18 @@ export class AuthService implements IAuthService {
     protected async EndSessionCallBack(){
         this.browser.closeWindow();
         this.storage.removeItem(TOKEN_RESPONSE_KEY);
-        this.authSubject.notify(AuthActionBuilder.SignOutSuccess());
+        this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
     }
 
     protected async performEndSessionRequest() : Promise<void>{
-        let token : TokenResponse | undefined = await this.getTokenFromSubject();   
-
-        if(token != undefined){
+        if(this.session.token != undefined){
             let requestJson : EndSessionRequestJson = {
-                postLogoutRedirectURI : this.getAuthConfig().end_session_redirect_url,
-                idTokenHint: token.idToken || ''
+                postLogoutRedirectURI : this.authConfig.end_session_redirect_url,
+                idTokenHint: this.session.token?.idToken || ''
             }
     
             let request : EndSessionRequest = new EndSessionRequest(requestJson);
-            let returnedUrl : string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.getConfiguration(), request);
+            let returnedUrl : string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
 
             //callback may come from showWindow or via another method
             if(returnedUrl != undefined){
@@ -179,111 +140,154 @@ export class AuthService implements IAuthService {
     }
 
     protected async performAuthorizationRequest(auth_extras?: StringMap) : Promise<void> {
-        return this.requestHandler.performAuthorizationRequest(await this.getConfiguration(), await this.getAuthorizationRequest(auth_extras));       
-    }
-
-    protected async getAuthorizationRequest(auth_extras?: StringMap){
-        let authConfig : IAuthConfig = this.getAuthConfig();
         let requestJson : AuthorizationRequestJson = {
-            response_type: authConfig.response_type || AuthorizationRequest.RESPONSE_TYPE_CODE,
-            client_id: authConfig.identity_client,
-            redirect_uri: authConfig.redirect_url,
-            scope: authConfig.scopes,
+            response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
+            client_id: this.authConfig.client_id,
+            redirect_uri: this.authConfig.redirect_url,
+            scope: this.authConfig.scopes,
             extras: auth_extras
         }
         
-        let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), authConfig.usePkce);
+        let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
 
-        if(authConfig.usePkce)
+        if(this.authConfig.pkce)
             await request.setupCodeVerifier();
 
-        return request;
-    }
-
-    protected async getConfiguration() : Promise<AuthorizationServiceConfiguration>{
-        if(!this.configuration){
-            this.configuration = await AuthorizationServiceConfiguration.fetchFromIssuer(this.getAuthConfig().identity_server,this.requestor).catch(()=> undefined);
-        }
-        
-        if(this.configuration != undefined){
-            return this.configuration;
-        }else{
-            throw new Error("Unable To Obtain Server Configuration");
-        }
+        return this.requestHandler.performAuthorizationRequest(await this.configuration, request);       
     }
 
     protected async requestAccessToken(code : string, codeVerifier?: string) : Promise<void> {
-        let authConfig : IAuthConfig = this.getAuthConfig();
         let requestJSON: TokenRequestJson = {
           grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
           code: code,
           refresh_token: undefined,
-          redirect_uri: authConfig.redirect_url,
-          client_id: authConfig.identity_client,
+          redirect_uri: this.authConfig.redirect_url,
+          client_id: this.authConfig.client_id,
           extras: (codeVerifier) ? { 
             "code_verifier": codeVerifier
           } : {}
 
         }
         
-        try{
-            let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON));
-            await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
-            this.authSubject.notify(AuthActionBuilder.SignInSuccess(token))
-        }catch(error){
-            this.authSubject.notify(AuthActionBuilder.SignInFailed(error))
-        }
+        let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
+        await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+        this.notifyActionListers(AuthActionBuilder.SignInSuccess(token))
     }
-    
-    public async requestRefreshToken(tokenResponse : TokenResponse) : Promise<void> {
-        let authConfig : IAuthConfig = this.getAuthConfig();
+
+    protected async requestTokenRefresh() {
+        if(!this.session.token){
+            throw new Error("No Token Defined!");
+        }
+
         let requestJSON: TokenRequestJson = {
           grant_type: GRANT_TYPE_REFRESH_TOKEN,
-          code: undefined,
-          refresh_token: tokenResponse.refreshToken,
-          redirect_uri: authConfig.redirect_url,
-          client_id: authConfig.identity_client,
+          refresh_token: this.session.token?.refreshToken,
+          redirect_uri: this.authConfig.redirect_url,
+          client_id: this.authConfig.client_id,
         }    
         
-        try{
-            let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.getConfiguration(), new TokenRequest(requestJSON))
-            await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
-            this.authSubject.notify(AuthActionBuilder.RefreshSuccess(token));
-        }catch(error){
-            this.storage.removeItem(TOKEN_RESPONSE_KEY);
-            this.authSubject.notify(AuthActionBuilder.RefreshFailed(error))
-        }
+        let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON))
+        await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+        this.notifyActionListers(AuthActionBuilder.RefreshSuccess(token));
     }
 
-    public async getValidToken(buffer?: number) : Promise<TokenResponse | undefined> {
-        let token : TokenResponse | undefined = await this.getTokenFromSubject();   
+    protected async internalLoadTokenFromStorage() {
+        let token : TokenResponse | undefined;
+        let tokenResponseString : string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
 
-        if(token == undefined)
-            throw new Error("Unable To Obtain Token - No Token Available");
+        if(tokenResponseString != null){
+            token = new TokenResponse(JSON.parse(tokenResponseString)); 
 
-        // The buffer parameter passed to token.isValid().
-        let isValidBuffer = (buffer) ? buffer : AUTH_EXPIRY_BUFFER;
-
-        if(!token.isValid(isValidBuffer)){
-            token = await this.requestNewToken(token);
+            if(token){
+                return this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageSuccess(token));
+            } 
         }
 
-        return token;
+        throw new Error("No Token In Storage");
     }
 
-    protected async requestNewToken(token: TokenResponse) : Promise<TokenResponse | undefined>  {
-        await this.requestRefreshToken(token);
-        return this.getTokenFromSubject();   
+    protected async internalRequestUserInfo(buffer: number = AUTH_EXPIRY_BUFFER){
+        let token = await this.getValidToken(buffer);
+        let userInfo = await this.userInfoHandler.performUserInfoRequest(await this.configuration, token);
+        this.notifyActionListers(AuthActionBuilder.LoadUserInfoSuccess(userInfo));
     }
 
-    protected async getTokenFromSubject() : Promise<TokenResponse | undefined> {
-        let token : TokenResponse | undefined = undefined;
-        this.actionHistory.forEach((action) => {
-            if(action.tokenResponse != undefined) {
-                token = action.tokenResponse;
-            }
+    public async loadTokenFromStorage() {
+        await this.internalLoadTokenFromStorage().catch((response) => {
+            this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageFailed(response));
         });
-        return token;
+    }
+
+    public async signIn(auth_extras?: StringMap) {
+        await this.performAuthorizationRequest(auth_extras).catch((response) => {
+            this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
+        });
+    }
+
+    public async signOut() {
+        await this.performEndSessionRequest().catch((response) => { 
+            this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
+        });
+    }
+
+    public async refreshToken() {
+        await this.requestTokenRefresh().catch((response) => { 
+            this.storage.removeItem(TOKEN_RESPONSE_KEY);
+            this.notifyActionListers(AuthActionBuilder.RefreshFailed(response));
+        });
+    }
+
+    public async loadUserInfo(buffer: number = AUTH_EXPIRY_BUFFER) {
+        await this.internalRequestUserInfo(buffer).catch((response) => { 
+            this.notifyActionListers(AuthActionBuilder.LoadUserInfoFailed(response));
+        });
+    }
+
+    public handleCallback(callbackUrl: string): void {
+        if ((callbackUrl).indexOf(this.authConfig.redirect_url) === 0) {
+            this.AuthorizationCallBack(callbackUrl).catch((response) => { 
+                this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
+            });
+        }
+    
+        if ((callbackUrl).indexOf(this.authConfig.end_session_redirect_url) === 0) {
+            this.EndSessionCallBack().catch((response) => { 
+                this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
+            });
+        }
+    }
+
+    public async getValidToken(buffer: number = AUTH_EXPIRY_BUFFER): Promise<TokenResponse> {
+        if(this.session.token){
+            if(!this.session.token.isValid(buffer)){
+                await this.refreshToken()
+                if(this.session.token){
+                    return this.session.token;
+                }              
+            }else{
+                return this.session.token;
+            }
+        }
+
+        throw new Error("Unable To Obtain Valid Token");
+    }
+
+    public addActionListener(func: (action : IAuthAction) => void): AuthObserver {
+        let observer: AuthObserver  = AuthObserver.Create(func);
+        this.addActionObserver(observer);
+        return observer;
+    }
+
+    public addActionObserver(observer : BaseAuthObserver): void {
+        if(this._actionHistory.lastAction){
+            observer.update(this._actionHistory.lastAction);
+        }
+
+        this._authSubject.attach(observer);
+    }
+
+    public removeActionObserver(observer : BaseAuthObserver) : void {
+        this._authSubject.detach(observer);
     }
 }
 

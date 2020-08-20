@@ -8,14 +8,17 @@ export enum AuthActions {
     SignOutFailed = "Sign Out Failed",
     RefreshSuccess = "Refresh Success",
     RefreshFailed = "Refesh Failed",
-    SignInFromStorageSuccess = "Sign In From Storage Success",
-    SignInFromStorageFailed = "Sign In From Storage Failed"
+    LoadTokenFromStorageSuccess = "Get Token From Storage Success",
+    LoadTokenFromStorageFailed = "Get Token From Storage Failed",
+    LoadUserInfoSuccess = "Load User Info Success",
+    LoadUserInfoFailed = "Load User Info Failed",
 }
 
 export interface IAuthAction {
     action : string,
     tokenResponse ?: TokenResponse
     error ?: string;
+    user ?: any;
 }
 
 export class AuthActionBuilder {
@@ -34,49 +37,63 @@ export class AuthActionBuilder {
     public static SignOutFailed(error : any) : IAuthAction{
         return {
             action : AuthActions.SignOutFailed,
-            error : JSON.stringify(error)
+            error: error.message
         }
     }
 
-    public static RefreshSuccess(token : TokenResponse) : IAuthAction{
+    public static RefreshSuccess(tokenResponse : TokenResponse) : IAuthAction{
         return {
             action : AuthActions.RefreshSuccess,
-            tokenResponse : token
+            tokenResponse
         }
     }
 
     public static RefreshFailed(error : any) : IAuthAction{
         return {
             action : AuthActions.RefreshFailed,
-            error : JSON.stringify(error)
+            error: error.message,
         }
     }
 
-    public static SignInSuccess(token : TokenResponse) : IAuthAction{
+    public static SignInSuccess(tokenResponse : TokenResponse) : IAuthAction{
         return {
             action : AuthActions.SignInSuccess,
-            tokenResponse : token
+            tokenResponse
         }
     }
 
-    public static SignInFailed(error : any) : IAuthAction{
+    public static SignInFailed(error : any) : IAuthAction {
         return {
             action : AuthActions.SignInFailed,
-            error : JSON.stringify(error)
+            error: error.message
         }
     }
 
-    public static SignInFromStorageSuccess(token : TokenResponse) : IAuthAction{
+    public static LoadTokenFromStorageSuccess(tokenResponse : TokenResponse) : IAuthAction{
         return {
-            action : AuthActions.SignInFromStorageSuccess,
-            tokenResponse : token
+            action : AuthActions.LoadTokenFromStorageSuccess,
+            tokenResponse
         }
     }
 
-    public static SignInFromStorageFailed(error : any) : IAuthAction{
+    public static LoadTokenFromStorageFailed(error : any) : IAuthAction{
         return {
-            action : AuthActions.SignInFromStorageFailed,
-            error : JSON.stringify(error)
+            action : AuthActions.LoadTokenFromStorageFailed,
+            error: error.message
+        }
+    }
+
+    public static LoadUserInfoSuccess(user : any) : IAuthAction{
+        return {
+            action : AuthActions.LoadUserInfoSuccess,
+            user
+        }
+    }
+
+    public static LoadUserInfoFailed(error : any) : IAuthAction{
+        return {
+            action : AuthActions.LoadUserInfoFailed,
+            error: error.message
         }
     }
 }

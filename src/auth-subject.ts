@@ -1,16 +1,17 @@
 import { IAuthAction } from './auth-action';
+import { BaseAuthObserver } from '.';
 
 export interface IAuthSubject {
-    attach(observer: IAuthObserver): void;
-    detach(observer: IAuthObserver): void;
+    attach(observer: BaseAuthObserver): void;
+    detach(observer: BaseAuthObserver): void;
     notify(action : IAuthAction): void;
 }
 
 export class AuthSubject implements IAuthSubject {
 
-    private observers: IAuthObserver[] = [];
+    private observers: BaseAuthObserver[] = [];
 
-    public attach(observer: IAuthObserver): void {
+    public attach(observer: BaseAuthObserver): void {
         const observerIndex = this.observers.indexOf(observer);
         if (observerIndex !== -1) {
             return console.log('Subject: Observer has been attached already.');
@@ -19,7 +20,7 @@ export class AuthSubject implements IAuthSubject {
         this.observers.push(observer);
     }
 
-    public detach(observer: IAuthObserver): void {
+    public detach(observer: BaseAuthObserver): void {
         const observerIndex = this.observers.indexOf(observer);
         if (observerIndex === -1) {
             return console.log('Subject: Nonexistent observer.');
@@ -33,20 +34,4 @@ export class AuthSubject implements IAuthSubject {
             observer.update(action);
         }
     }
-}
-
-export interface IAuthObserver {
-    update(action : IAuthAction): void;
-}
-
-export class AuthObserver implements IAuthObserver {
-
-    constructor(
-        private func : (action: IAuthAction) => void
-        ) {}
-
-    update(action: IAuthAction): void {
-        this.func(action);
-    }
-
 }

@@ -1,4 +1,4 @@
-import { CordovaDocument } from './index';
+import { CordovaDocument } from './cordova-document';
 import { Browser } from '../auth-browser'
 import { SafariViewController } from '@ionic-native/safari-view-controller'
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser'

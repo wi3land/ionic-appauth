@@ -4,13 +4,16 @@ import { Plugins } from '@capacitor/core';
 
 const { SecureStoragePlugin } = Plugins;
 
+// REQUIRES CAPACITOR PLUGINS
+// capacitor-secure-storage-plugin
 export class CapacitorSecureStorage implements StorageBackend {
 
-  async getItem(name: string): Promise<string> {
+  async getItem(name: string): Promise<string | null> {
     if(!SecureStoragePlugin)
       throw new Error("Capacitor Secure Storage Is Undefined!");
 
-    let returned = await SecureStoragePlugin.get({ key: name });
+    let returned = await SecureStoragePlugin.get({ key: name })
+                                    .catch(() => { return  { value: null } });
     return returned.value;
   }  
   

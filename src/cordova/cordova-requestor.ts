@@ -1,4 +1,4 @@
-import { CordovaDocument } from './index';
+import { CordovaDocument } from './cordova-document';
 import { Requestor } from '@openid/appauth';
 import { HTTP, HTTPResponse } from '@ionic-native/http'
 
