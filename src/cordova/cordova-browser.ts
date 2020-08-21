@@ -47,7 +47,7 @@ export class CordovaBrowser extends Browser {
             this.inAppBrowserRef = InAppBrowser.create(url, '_self', options);
 
             if(this.inAppBrowserRef != undefined)
-                this.inAppBrowserRef.on('exit').subscribe((event) => this.onCloseFunction);
+                this.inAppBrowserRef.on('exit').subscribe(() => this.onCloseFunction());
         
         }
         return;

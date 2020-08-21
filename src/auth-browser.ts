@@ -11,11 +11,11 @@ export abstract class Browser {
 
 export class DefaultBrowser extends Browser {
     public showWindow(url: string) : string | undefined {
-        window.open(url, "_self");
+        window.open(url, "_self")?.addEventListener('beforeupload', () => this.onCloseFunction());
         return;
     }
 
     public closeWindow(): void {
-        
+        window.close();
     }
 }
