@@ -17,7 +17,7 @@ export interface IAuthService {
     signIn(auth_extras?: StringMap): void;
     signOut(): void;
     refreshToken(): void;
-    loadUserInfo(buffer?: number) : void;
+    loadUserInfo() : void;
     handleCallback(callbackUrl: string): void;
     loadTokenFromStorage() : void;
     getValidToken(buffer?: number) : Promise<TokenResponse>;
@@ -206,10 +206,13 @@ export class AuthService implements IAuthService {
         throw new Error("No Token In Storage");
     }
 
-    protected async internalRequestUserInfo(buffer: number = AUTH_EXPIRY_BUFFER){
-        let token = await this.getValidToken(buffer);
-        let userInfo = await this.userInfoHandler.performUserInfoRequest(await this.configuration, token);
-        this.notifyActionListers(AuthActionBuilder.LoadUserInfoSuccess(userInfo));
+    protected async internalRequestUserInfo(){
+        if(this.session.token){
+            let userInfo = await this.userInfoHandler.performUserInfoRequest(await this.configuration, this.session.token);
+            this.notifyActionListers(AuthActionBuilder.LoadUserInfoSuccess(userInfo));
+        }else{
+            throw new Error("No Token Available");
+        }     
     }
 
     public async loadTokenFromStorage() {
@@ -237,8 +240,8 @@ export class AuthService implements IAuthService {
         });
     }
 
-    public async loadUserInfo(buffer: number = AUTH_EXPIRY_BUFFER) {
-        await this.internalRequestUserInfo(buffer).catch((response) => { 
+    public async loadUserInfo() {
+        await this.internalRequestUserInfo().catch((response) => { 
             this.notifyActionListers(AuthActionBuilder.LoadUserInfoFailed(response));
         });
     }
