@@ -61,10 +61,14 @@ export class SessionObserver extends BaseAuthObserver {
                 this.session.token = action.tokenResponse;
                 this.session.isAuthenticated = true;
                 break;
+            case AuthActions.LoadUserInfoSuccess:
+                this.session.error = undefined;
+                this.session.user = action.user;
+                break; 
             case AuthActions.LoadUserInfoFailed:
                 this.session.error = action.error;
                 this.session.user = undefined;
-                break;
+                break; 
             case AuthActions.SignOutSuccess:
             case AuthActions.Default:
                 this.session = new DefaultAuthSession();
