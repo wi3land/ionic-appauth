@@ -14,7 +14,7 @@ const TOKEN_RESPONSE_KEY = "token_response";
 const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 
 export interface IAuthService {
-    signIn(auth_extras?: StringMap): void;
+    signIn(authExtras?: StringMap): void;
     signOut(): void;
     refreshToken(): void;
     loadUserInfo() : void;
@@ -140,13 +140,13 @@ export class AuthService implements IAuthService {
         } 
     }
 
-    protected async performAuthorizationRequest(auth_extras?: StringMap) : Promise<void> {
+    protected async performAuthorizationRequest(authExtras?: StringMap) : Promise<void> {
         let requestJson : AuthorizationRequestJson = {
             response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
             client_id: this.authConfig.client_id,
             redirect_uri: this.authConfig.redirect_url,
             scope: this.authConfig.scopes,
-            extras: auth_extras
+            extras: authExtras
         }
         
         let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
@@ -222,8 +222,8 @@ export class AuthService implements IAuthService {
         });
     }
 
-    public async signIn(auth_extras?: StringMap) {
-        await this.performAuthorizationRequest(auth_extras).catch((response) => {
+    public async signIn(authExtras?: StringMap) {
+        await this.performAuthorizationRequest(authExtras).catch((response) => {
             this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
         });
     }
