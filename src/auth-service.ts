@@ -18,7 +18,8 @@ export interface IAuthService {
     signOut(): void;
     refreshToken(): void;
     loadUserInfo() : void;
-    handleCallback(callbackUrl: string): void;
+    authorizationCallback(callbackUrl: string): void;
+    endSessionCallback(): void;
     loadTokenFromStorage() : void;
     getValidToken(buffer?: number) : Promise<TokenResponse>;
     addActionObserver(observer : BaseAuthObserver): void;
@@ -107,13 +108,13 @@ export class AuthService implements IAuthService {
         }
     }
 
-    protected async AuthorizationCallBack(url: string){
+    protected async internalAuthorizationCallback(url: string){
         this.browser.closeWindow();
         await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
         return this.requestHandler.completeAuthorizationRequestIfPossible();
     }
 
-    protected async EndSessionCallBack(){
+    protected async internalEndSessionCallback(){
         this.browser.closeWindow();
         this.storage.removeItem(TOKEN_RESPONSE_KEY);
         this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
@@ -131,11 +132,11 @@ export class AuthService implements IAuthService {
 
             //callback may come from showWindow or via another method
             if(returnedUrl != undefined){
-                this.EndSessionCallBack();
+                this.endSessionCallback();
             }
         }else{
             //if user has no token they should not be logged in in the first place
-            this.EndSessionCallBack();
+            this.endSessionCallback();
         } 
     }
 
@@ -246,18 +247,16 @@ export class AuthService implements IAuthService {
         });
     }
 
-    public handleCallback(callbackUrl: string): void {
-        if ((callbackUrl).indexOf(this.authConfig.redirect_url) === 0) {
-            this.AuthorizationCallBack(callbackUrl).catch((response) => { 
-                this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
-            });
-        }
-    
-        if ((callbackUrl).indexOf(this.authConfig.end_session_redirect_url) === 0) {
-            this.EndSessionCallBack().catch((response) => { 
-                this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
-            });
-        }
+    public authorizationCallback(callbackUrl: string): void {
+        this.internalAuthorizationCallback(callbackUrl).catch((response) => { 
+            this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
+        });
+    }
+
+    public endSessionCallback(): void {
+        this.internalEndSessionCallback().catch((response) => { 
+            this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
+        });
     }
 
     public async getValidToken(buffer: number = AUTH_EXPIRY_BUFFER): Promise<TokenResponse> {
