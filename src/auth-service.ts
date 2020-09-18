@@ -124,7 +124,7 @@ export class AuthService implements IAuthService {
         if(this.session.token != undefined){
             let requestJson : EndSessionRequestJson = {
                 postLogoutRedirectURI : this.authConfig.end_session_redirect_url,
-                idTokenHint: this.session.token?.idToken || ''
+                idTokenHint: this.session.token.idToken || ''
             }
     
             let request : EndSessionRequest = new EndSessionRequest(requestJson);
