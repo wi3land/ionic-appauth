@@ -120,11 +120,12 @@ export class AuthService implements IAuthService {
         this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
     }
 
-    protected async performEndSessionRequest() : Promise<void>{
+    protected async performEndSessionRequest(state?: string) : Promise<void>{
         if(this.session.token != undefined){
             let requestJson : EndSessionRequestJson = {
                 postLogoutRedirectURI : this.authConfig.end_session_redirect_url,
-                idTokenHint: this.session.token.idToken || ''
+                idTokenHint: this.session.token.idToken || '',
+                state: state || undefined,
             }
     
             let request : EndSessionRequest = new EndSessionRequest(requestJson);
@@ -140,13 +141,14 @@ export class AuthService implements IAuthService {
         } 
     }
 
-    protected async performAuthorizationRequest(authExtras?: StringMap) : Promise<void> {
+    protected async performAuthorizationRequest(authExtras?: StringMap, state?: string) : Promise<void> {
         let requestJson : AuthorizationRequestJson = {
             response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
             client_id: this.authConfig.client_id,
             redirect_uri: this.authConfig.redirect_url,
             scope: this.authConfig.scopes,
-            extras: authExtras
+            extras: authExtras,
+            state: state || undefined,
         }
         
         let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
@@ -222,14 +224,14 @@ export class AuthService implements IAuthService {
         });
     }
 
-    public async signIn(authExtras?: StringMap) {
-        await this.performAuthorizationRequest(authExtras).catch((response) => {
+    public async signIn(authExtras?: StringMap, state?: string) {
+        await this.performAuthorizationRequest(authExtras, state).catch((response) => {
             this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
         });
     }
 
-    public async signOut() {
-        await this.performEndSessionRequest().catch((response) => { 
+    public async signOut(state?: string) {
+        await this.performEndSessionRequest(state).catch((response) => { 
             this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
         });
     }
