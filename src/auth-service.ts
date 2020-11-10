@@ -116,7 +116,7 @@ export class AuthService implements IAuthService {
 
     protected async internalEndSessionCallback(){
         this.browser.closeWindow();
-        this.storage.removeItem(TOKEN_RESPONSE_KEY);
+        await this.storage.removeItem(TOKEN_RESPONSE_KEY);
         this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
     }
 
