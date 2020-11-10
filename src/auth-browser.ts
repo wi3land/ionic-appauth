@@ -11,7 +11,11 @@ export abstract class Browser {
 
 export class DefaultBrowser extends Browser {
     public showWindow(url: string) : string | undefined {
-        window.open(url, "_self")?.addEventListener('beforeupload', () => this.onCloseFunction());
+        const openWindow = window.open(url, "_self")
+        if (openWindow) {
+            openWindow.addEventListener('beforeupload', () => this.onCloseFunction());
+        }
+
         return;
     }
 
