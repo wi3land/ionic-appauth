@@ -39,6 +39,11 @@ export class ActionHistoryObserver extends BaseAuthObserver {
         this.lastAction = action;
         this.history.push(action);
     }
+
+    clear(): void {
+        this.history = [];
+        this.lastAction = undefined;
+    }
 }
 
 export class SessionObserver extends BaseAuthObserver {
