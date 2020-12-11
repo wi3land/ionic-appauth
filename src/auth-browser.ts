@@ -20,6 +20,7 @@ export class DefaultBrowser extends Browser {
     }
 
     public closeWindow(): void {
-        window.close();
+        // Invoking window.close() is not desired. It will either be ignored (most of the time),
+        // or it will close the current browser tab if this site was opened via a "_blank" target.
     }
 }
