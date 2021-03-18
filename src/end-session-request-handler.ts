@@ -26,7 +26,7 @@ export class IonicEndSessionHandler implements EndSessionHandler {
       };
   
       let query = this.utils.stringify(requestMap);
-      let baseUrl = configuration.endSessionEndpoint;
+      let baseUrl = configuration.endSessionEndpoint ? configuration.endSessionEndpoint: request.postLogoutRedirectURI;
       let url = `${baseUrl}?${query}`;
       return url;
     }
