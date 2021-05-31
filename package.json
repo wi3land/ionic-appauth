@@ -48,7 +48,7 @@
   },
   "optionalDependencies": {
     "@capacitor/core": "^2.4.0",
-    "capacitor-secure-storage-plugin": "^0.4.0",
+    "capacitor-secure-storage-plugin": "0.5.1",
     "@ionic-native/core": "^5.28.0",
     "@ionic-native/http": "^5.28.0",
     "@ionic-native/in-app-browser": "^5.28.0",
