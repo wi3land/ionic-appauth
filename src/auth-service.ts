@@ -244,8 +244,11 @@ export class AuthService implements IAuthService {
           redirect_uri: this.authConfig.redirect_url,
           client_id: this.authConfig.client_id,
           extras: (codeVerifier) ? { 
-            "code_verifier": codeVerifier
-          } : {}
+            "code_verifier": codeVerifier,
+            "client_secret": this.authConfig.client_secret,
+          } : {
+            "client_secret": this.authConfig.client_secret,
+          }
 
         }
         

@@ -1,6 +1,6 @@
 {
   "name": "ionic-appauth",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Intergration for OpenId/AppAuth-JS into Ionic V3/4/5",
   "main": "lib/index.js",
   "scripts": {
@@ -22,7 +22,8 @@
     "Cordova",
     "OpenId",
     "Angular",
-    "React"
+    "React",
+    "Vue"
   ],
   "author": {
     "name": "wi3land"

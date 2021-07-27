@@ -1,0 +1,92 @@
+{
+  "name": "ionic-appauth-ng-demo",
+  "version": "0.0.1",
+  "author": "Ionic Framework",
+  "homepage": "https://ionicframework.com/",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "12.1.3",
+    "@angular/core": "12.1.3",
+    "@angular/forms": "12.1.3",
+    "@angular/platform-browser": "12.1.3",
+    "@angular/platform-browser-dynamic": "12.1.3",
+    "@angular/router": "12.1.3",
+    "@ionic-native/core": "5.34.0",
+    "@ionic-native/splash-screen": " 5.34.0",
+    "@ionic-native/status-bar": " 5.34.0",
+    "@ionic/angular": "5.6.12",
+    "@ionic/storage-angular": "^3.0.6",
+    "@openid/appauth": "1.3.1",
+    "ionic-appauth": "0.8.1",
+    "rxjs": "6.6.7",
+    "tslib": "2.3.0",
+    "zone.js": "0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "12.1.3",
+    "@angular/cli": "12.1.3",
+    "@angular/compiler": "12.1.3",
+    "@angular/compiler-cli": "12.1.3",
+    "@angular/language-service": "12.1.3",
+    "@ionic/angular-toolkit": "4.0.0",
+    "@types/jasmine": "3.6.1",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "14.14.7",
+    "codelyzer": "6.0.2",
+    "cordova-android": "^10.0.0",
+    "cordova-plugin-advanced-http": "3.2.0",
+    "cordova-plugin-customurlscheme": "^5.0.2",
+    "cordova-plugin-device": "2.0.3",
+    "cordova-plugin-file": "^6.0.2",
+    "cordova-plugin-inappbrowser": "git+https://github.com/Onegini/cordova-plugin-inappbrowser.git",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "5.0.0",
+    "cordova-plugin-safariviewcontroller": "^2.0.0",
+    "cordova-plugin-secure-storage-echo": "^5.1.1",
+    "cordova-plugin-splashscreen": "6.0.0",
+    "cordova-plugin-statusbar": "2.4.3",
+    "cordova-plugin-whitelist": "1.3.5",
+    "jasmine-core": "3.8.0",
+    "jasmine-spec-reporter": "7.0.0",
+    "karma": "6.3.4",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "4.0.1",
+    "karma-jasmine-html-reporter": "^1.7.0",
+    "protractor": "~7.0.0",
+    "ts-node": "10.0.0",
+    "tslint": "~6.1.0",
+    "typescript": "4.3.5"
+  },
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-secure-storage-echo": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-safariviewcontroller": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "appauth"
+      },
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
+      "cordova-plugin-ionic-keyboard": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}
