@@ -194,6 +194,7 @@ export class AuthService implements IAuthService {
 
     protected async internalEndSessionCallback(){
         this.browser.closeWindow();
+        this._actionHistory.clear();
         this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
     }
 
