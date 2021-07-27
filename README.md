@@ -14,10 +14,10 @@ npm install ionic-appauth --save
 
 ## Examples
 Demos have been moved into the main repository to centralise issues.
-- Angular/Cordova: https://github.com/wi3land/ionic-appauth/demos/angular-cordova<br />
-- Angular/Capacitor: https://github.com/wi3land/ionic-appauth/demos/angular-capacitor<br />
-- React: https://github.com/wi3land/ionic-appauth/demos/react<br />
-- Vue: https://github.com/wi3land/ionic-appauth/demos/vue<br />
+- Angular/Cordova: https://github.com/wi3land/ionic-appauth/tree/master/demos/angular-cordova<br />
+- Angular/Capacitor: https://github.com/wi3land/ionic-appauth/tree/master/demos/angular-capacitor<br />
+- React: https://github.com/wi3land/ionic-appauth/tree/master/demos/react<br />
+- Vue: https://github.com/wi3land/ionic-appauth/tree/master/demos/vue<br />
 - Vanilla: (To Be Completed)
 - Ionic V3: (To Be Completed)
 
