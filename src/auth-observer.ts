@@ -75,7 +75,7 @@ export class SessionObserver extends BaseAuthObserver {
                 this.session.user = undefined;
                 break; 
             case AuthActions.SignOutSuccess:
-            case AuthActions.Default:
+            case AuthActions.Init:
                 this.session = new DefaultAuthSession();
                 break;
             case AuthActions.SignOutFailed:

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "outDir": "./lib",
-      "declaration": false,
+      "declaration": true,
       "downlevelIteration": true,
       "experimentalDecorators": true,
       "moduleResolution": "node",
@@ -14,5 +14,5 @@
       ]
     },
     "include": ["src"],
-    "exclude": ["node_modules", "**/__tests__/*"],
+    "exclude": ["node_modules", "**/__tests__/*", "demos"],
 }

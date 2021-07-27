@@ -1,5 +1,5 @@
 import { IAuthAction } from './auth-action';
-import { BaseAuthObserver } from '.';
+import { BaseAuthObserver } from './auth-observer';
 
 export interface IAuthSubject {
     attach(observer: BaseAuthObserver): void;

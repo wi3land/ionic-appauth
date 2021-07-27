@@ -1,34 +1,34 @@
 import { StorageBackend } from '@openid/appauth';
-import { Plugins } from '@capacitor/core';
+import { Storage } from '@capacitor/storage';
 
 export class CapacitorStorage implements StorageBackend {
 
   async getItem(name: string): Promise<string | null> {
-    if(!Plugins.Storage)
+    if(!Storage)
       throw new Error("Capacitor Storage Is Undefined!");
 
-    let returned = await Plugins.Storage.get({ key: name });
+    let returned = await Storage.get({ key: name });
     return returned.value;
   }  
   
   removeItem(name: string): Promise<void> {
-    if(!Plugins.Storage)
+    if(!Storage)
       throw new Error("Capacitor Storage Is Undefined!");
 
-    return Plugins.Storage.remove({ key: name });
+    return Storage.remove({ key: name });
   }
 
   clear(): Promise<void> {
-    if(!Plugins.Storage)
+    if(!Storage)
       throw new Error("Capacitor Storage Is Undefined!");
 
-    return Plugins.Storage.clear();
+    return Storage.clear();
   }
 
   setItem(name: string, value: string): Promise<void> {
-    if(!Plugins.Storage)
+    if(!Storage)
       throw new Error("Capacitor Storage Is Undefined!");
       
-    return  Plugins.Storage.set({ key: name, value: value });
+    return  Storage.set({ key: name, value: value });
   }
 }

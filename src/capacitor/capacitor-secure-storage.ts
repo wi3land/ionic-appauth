@@ -1,8 +1,5 @@
 import { StorageBackend } from '@openid/appauth';
-import 'capacitor-secure-storage-plugin';
-import { Plugins } from '@capacitor/core';
-
-const { SecureStoragePlugin } = Plugins;
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 // REQUIRES CAPACITOR PLUGINS
 // capacitor-secure-storage-plugin

@@ -1,0 +1,7 @@
+{
+  "name": "ionic-appauth-ng-demo",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

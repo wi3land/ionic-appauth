@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Logged Out</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button (click)="signIn()">Sign In</ion-button>
+  <ion-card *ngIf="events$ | async as event">
+    <ion-card-header>
+      Action Data
+    </ion-card-header>
+    <ion-card-content>
+      {{event | json}}
+    </ion-card-content>
+  </ion-card>
+</ion-content>
