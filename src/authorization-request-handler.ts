@@ -45,7 +45,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
 
         //callback may come from showWindow or via another method
         if(returnedUrl != undefined){
-            await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, url);
+            await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, returnedUrl);
             this.completeAuthorizationRequestIfPossible();
         }
     }
