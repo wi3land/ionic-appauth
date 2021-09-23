@@ -1,7 +1,7 @@
-import { TokenResponse } from '@openid/appauth';
+import { TokenResponse, RevokeTokenRequest } from '@openid/appauth';
 
 export enum AuthActions {
-    Default = "Default",
+    Init = "Init",
     SignInSuccess = "Sign In Success",
     SignInFailed = "Sign In Failed",
     SignOutSuccess = "Sign Out Success",
@@ -12,6 +12,8 @@ export enum AuthActions {
     LoadTokenFromStorageFailed = "Get Token From Storage Failed",
     LoadUserInfoSuccess = "Load User Info Success",
     LoadUserInfoFailed = "Load User Info Failed",
+    RevokeTokensSuccess = "Revoke Tokens Success",
+    RevokeTokensFailed = "Revoke Tokens Failed"
 }
 
 export interface IAuthAction {
@@ -22,9 +24,9 @@ export interface IAuthAction {
 }
 
 export class AuthActionBuilder {
-    public static Default() : IAuthAction{
+    public static Init() : IAuthAction{
         return {
-            action : AuthActions.Default,
+            action : AuthActions.Init,
         }
     }
 
@@ -79,6 +81,20 @@ export class AuthActionBuilder {
     public static LoadTokenFromStorageFailed(error : any) : IAuthAction{
         return {
             action : AuthActions.LoadTokenFromStorageFailed,
+            error: error.message
+        }
+    }
+
+    public static RevokeTokensSuccess() : IAuthAction{
+        return {
+            action : AuthActions.RevokeTokensSuccess,
+            tokenResponse: undefined
+        }
+    }
+
+    public static RevokeTokensFailed(error : any) : IAuthAction{
+        return {
+            action : AuthActions.RevokeTokensFailed,
             error: error.message
         }
     }

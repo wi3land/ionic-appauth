@@ -15,7 +15,7 @@ export class CordovaBrowser extends Browser {
         await CordovaDocument.ready();
 
         if(await SafariViewController.isAvailable()){
-            SafariViewController.hide(); 
+            try{SafariViewController.hide(); }catch{}  
         }else{
             if(this.inAppBrowserRef != undefined)
                 this.inAppBrowserRef.close(); 

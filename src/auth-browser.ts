@@ -11,11 +11,16 @@ export abstract class Browser {
 
 export class DefaultBrowser extends Browser {
     public showWindow(url: string) : string | undefined {
-        window.open(url, "_self")?.addEventListener('beforeupload', () => this.onCloseFunction());
+        const openWindow = window.open(url, "_self")
+        if (openWindow) {
+            openWindow.addEventListener('beforeupload', () => this.onCloseFunction());
+        }
+
         return;
     }
 
     public closeWindow(): void {
-        window.close();
+        // Invoking window.close() is not desired. It will either be ignored (most of the time),
+        // or it will close the current browser tab if this site was opened via a "_blank" target.
     }
 }

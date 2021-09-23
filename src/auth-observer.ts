@@ -39,6 +39,11 @@ export class ActionHistoryObserver extends BaseAuthObserver {
         this.lastAction = action;
         this.history.push(action);
     }
+
+    clear(): void {
+        this.history = [];
+        this.lastAction = undefined;
+    }
 }
 
 export class SessionObserver extends BaseAuthObserver {
@@ -70,7 +75,7 @@ export class SessionObserver extends BaseAuthObserver {
                 this.session.user = undefined;
                 break; 
             case AuthActions.SignOutSuccess:
-            case AuthActions.Default:
+            case AuthActions.Init:
                 this.session = new DefaultAuthSession();
                 break;
             case AuthActions.SignOutFailed:

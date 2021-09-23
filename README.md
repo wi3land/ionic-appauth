@@ -16,9 +16,13 @@ npm install ionic-appauth --save
 
 ## Examples
 
-- React/Capacitor : https://github.com/wi3land/ionic-appauth-react-demo
-- Angular/Cordova : https://github.com/wi3land/ionic-appauth-ng-demo
-- Angular/Capacitor : https://github.com/wi3land/ionic-appauth-capacitor-demo
+Demos have been moved into the main repository to centralise issues.
+- Angular/Cordova: https://github.com/wi3land/ionic-appauth/tree/master/demos/angular-cordova<br />
+- Angular/Capacitor: https://github.com/wi3land/ionic-appauth/tree/master/demos/angular-capacitor<br />
+- React: https://github.com/wi3land/ionic-appauth/tree/master/demos/react<br />
+- Vue: https://github.com/wi3land/ionic-appauth/tree/master/demos/vue<br />
+- Vanilla: (To Be Completed)
+- Ionic V3: (To Be Completed)
 
 **NOTE**: You can use [OktaDev Schematics](https://github.com/oktadeveloper/schematics#ionic) to install the code from the Angular examples above. Cordova and Capacitor are both supported. The installation isn't Okta-specific, it just prompts you for an `issuer` and `clientId`.
 

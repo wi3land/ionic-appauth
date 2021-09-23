@@ -1,0 +1,13 @@
+{
+  "appId": "com.appauth.demo",
+  "appName": "com.appauth.demo",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
