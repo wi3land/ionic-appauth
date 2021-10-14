@@ -20,7 +20,7 @@
     "@types/react-dom": "17.0.9",
     "@types/react-router": "5.1.16",
     "@types/react-router-dom": "5.1.8",
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "capacitor-secure-storage-plugin": "0.6.2",
     "ionic-appauth": "0.8.1",
     "ionicons": "5.5.2",
