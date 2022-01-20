@@ -1,6 +1,6 @@
 {
-  "name": "ionic-appauth",
-  "version": "0.8.6",
+  "name": "@markotny/ionic-appauth",
+  "version": "0.8.7",
   "description": "Intergration for OpenId/AppAuth-JS into Ionic V3/4/5",
   "main": "lib/index.js",
   "scripts": {
@@ -11,9 +11,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:wi3land/ionic-appauth.git"
+    "url": "git@github.com:markotny/ionic-appauth.git"
   },
-  "homepage": "https://github.com/wi3land/ionic-appauth#readme",
+  "homepage": "https://github.com/markotny/ionic-appauth#readme",
   "keywords": [
     "OAuth",
     "AppAuth",
@@ -49,7 +49,7 @@
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
-    "rxjs": "^6.6.7"
+    "rxjs": "^6.5.3 || ^7.4.0"
   },
   "optionalDependencies": {
     "@capacitor/browser": "^1.0.2",
