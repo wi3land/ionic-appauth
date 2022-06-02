@@ -1,6 +1,6 @@
 import { CordovaDocument } from './cordova-document';
 import { Requestor } from '@openid/appauth';
-import { HTTP, HTTPResponse } from '@ionic-native/http'
+import { HTTP, HTTPResponse } from '@awesome-cordova-plugins/http'
 
 export interface XhrSettings {
     url: string,

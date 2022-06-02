@@ -1,6 +1,6 @@
 import { CordovaDocument } from './cordova-document';
 import { StorageBackend } from '@openid/appauth';
-import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage'
+import { SecureStorage, SecureStorageObject } from '@awesome-cordova-plugins/secure-storage'
 
 // REQUIRES CORDOVA PLUGINS
 // cordova-plugin-secure-storage
