@@ -1,5 +1,5 @@
 {
-  "name": "ionic-appauth",
+  "name": "@de-dan/ionic-appauth",
   "version": "0.8.6",
   "description": "Intergration for OpenId/AppAuth-JS into Ionic V3/4/5",
   "main": "lib/index.js",
@@ -11,9 +11,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:wi3land/ionic-appauth.git"
+    "url": "git+https://github.com/de-dan/ionic-appauth.git"
   },
-  "homepage": "https://github.com/wi3land/ionic-appauth#readme",
+  "homepage": "https://github.com/de-dan/ionic-appauth#readme",
   "keywords": [
     "OAuth",
     "AppAuth",
@@ -29,15 +29,15 @@
     "name": "wi3land"
   },
   "bugs": {
-    "url": "https://github.com/wi3land/ionic-appauth/issues"
+    "url": "https://github.com/de-dan/ionic-appauth/issues"
   },
   "license": "MIT",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
-    "eslint": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
     "rxjs": "^7.5.5",
-    "typescript": "^4.7.2"
+    "typescript": "^4.7.3"
   },
   "files": [
     "lib/**/*"
@@ -61,6 +61,6 @@
     "@awesome-cordova-plugins/safari-view-controller": "^5.43.0",
     "@awesome-cordova-plugins/secure-storage": "^5.43.0",
     "@ionic/storage": "^3.0.6",
-    "capacitor-secure-storage-plugin": "^0.7.0"
+    "capacitor-secure-storage-plugin": "^0.7.1"
   }
 }
