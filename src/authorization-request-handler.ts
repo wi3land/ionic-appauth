@@ -30,14 +30,14 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     constructor(
         private browser : Browser,
         private storage : StorageBackend,
-        utils = new BasicQueryStringUtils(),
-        private generateRandom = new DefaultCrypto(),
+        private crypto = new DefaultCrypto(),
+        private utils = new BasicQueryStringUtils()
         ) {
-        super(utils, generateRandom);
+        super(utils, crypto);
     }
 
     public async performAuthorizationRequest(configuration: AuthorizationServiceConfiguration, request: AuthorizationRequest) : Promise<void> {
-        let handle = this.generateRandom.generateRandom(10);
+        let handle = this.crypto.generateRandom(10);
         this.storage.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle);
         this.storage.setItem(authorizationRequestKey(handle), JSON.stringify(await request.toJson()));
         let url = this.buildRequestUrl(configuration, request);
@@ -81,7 +81,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
             throw new Error("No Auth Request Available");
         }
 
-        return new AuthorizationRequest(JSON.parse(authRequest));
+        return new AuthorizationRequest(JSON.parse(authRequest), this.crypto);
     }
 
     private getAuthorizationError(queryParams : StringMap): AuthorizationError  {
