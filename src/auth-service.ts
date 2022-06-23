@@ -11,7 +11,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ActionHistoryObserver, AuthObserver, BaseAuthObserver, SessionObserver } from './auth-observer';
 import { AuthSubject } from './auth-subject';
 
-const TOKEN_RESPONSE_KEY = "token_response";
 const AUTH_EXPIRY_BUFFER = 10 * 60 * -1;  // 10 mins in seconds
 
 export interface IAuthService {
@@ -100,7 +99,7 @@ export class AuthService implements IAuthService {
         if(!this._authConfig)
             throw new Error("AuthConfig Not Defined");
 
-        return this._authConfig;
+        return Object.assign({ token_response_storage_key: 'token_response' }, this._authConfig);
     }
 
     set authConfig(value: IAuthConfig) {
@@ -254,7 +253,7 @@ export class AuthService implements IAuthService {
         }
         
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
-        await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+        await this.storage.setItem(this.authConfig.token_response_storage_key, JSON.stringify(token.toJson()));
         this.notifyActionListers(AuthActionBuilder.SignInSuccess(token))
     }
 
@@ -271,13 +270,13 @@ export class AuthService implements IAuthService {
         }    
         
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON))
-        await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
+        await this.storage.setItem(this.authConfig.token_response_storage_key, JSON.stringify(token.toJson()));
         this.notifyActionListers(AuthActionBuilder.RefreshSuccess(token));
     }
 
     protected async internalLoadTokenFromStorage() {
         let token : TokenResponse | undefined;
-        let tokenResponseString : string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
+        let tokenResponseString: string | null = await this.storage.getItem(this.authConfig.token_response_storage_key);
 
         if(tokenResponseString != null){
             token = new TokenResponse(JSON.parse(tokenResponseString)); 
@@ -305,7 +304,7 @@ export class AuthService implements IAuthService {
         
         await this.tokenHandler.performRevokeTokenRequest(await this.configuration, new RevokeTokenRequest(revokeRefreshJson))
         await this.tokenHandler.performRevokeTokenRequest(await this.configuration, new RevokeTokenRequest(revokeAccessJson))
-        await this.storage.removeItem(TOKEN_RESPONSE_KEY);
+        await this.storage.removeItem(this.authConfig.token_response_storage_key);
         this.notifyActionListers(AuthActionBuilder.RevokeTokensSuccess());
     }
 
@@ -336,7 +335,7 @@ export class AuthService implements IAuthService {
             await this.revokeTokens();
         }
 
-        await this.storage.removeItem(TOKEN_RESPONSE_KEY);
+        await this.storage.removeItem(this.authConfig.token_response_storage_key);
 
         if((await this.configuration).endSessionEndpoint){
             await this.performEndSessionRequest(state).catch((response) => { 
@@ -347,7 +346,7 @@ export class AuthService implements IAuthService {
 
     public async revokeTokens() {
         await this.requestTokenRevoke().catch((response) => { 
-            this.storage.removeItem(TOKEN_RESPONSE_KEY);
+            this.storage.removeItem(this.authConfig.token_response_storage_key);
             this.notifyActionListers(AuthActionBuilder.RevokeTokensFailed(response));
         });
     }
@@ -355,7 +354,7 @@ export class AuthService implements IAuthService {
 
     public async refreshToken() {
         await this.requestTokenRefresh().catch((response) => { 
-            this.storage.removeItem(TOKEN_RESPONSE_KEY);
+            this.storage.removeItem(this.authConfig.token_response_storage_key);
             this.notifyActionListers(AuthActionBuilder.RefreshFailed(response));
         });
     }
