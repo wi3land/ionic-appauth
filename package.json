@@ -61,6 +61,6 @@
     "@ionic-native/safari-view-controller": "^5.36.0",
     "@ionic-native/secure-storage": "^5.36.0",
     "@ionic/storage": "^3.0.6",
-    "capacitor-secure-storage-plugin": "file:../capacitor-secure-storage-plugin/capacitor-secure-storage-plugin-0.8.0.tgz"
+    "capacitor-secure-storage-plugin": "^0.8.0"
   }
 }
