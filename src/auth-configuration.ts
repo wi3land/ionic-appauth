@@ -8,8 +8,8 @@ export interface IAuthConfig {
     client_id: string,
     client_secret?: string,
     server_host: string,
-    redirect_url: string, 
-    end_session_redirect_url: string, 
+    redirect_url: string,
+    end_session_redirect_url: string,
     scopes: string,
-    pkce : boolean
+    pkce: boolean
 }
