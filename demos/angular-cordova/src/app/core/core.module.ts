@@ -1,9 +1,7 @@
 import { Requestor, StorageBackend } from '@openid/appauth';
-import { APP_INITIALIZER, NgModule, NgZone } from '@angular/core';
+import { NgModule, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { Platform } from '@ionic/angular';
-
 import { HttpClient } from '@angular/common/http';
 import { browserFactory, storageFactory, httpFactory, authFactory } from './factories';
 import { Browser, AuthService } from 'ionic-appauth';
