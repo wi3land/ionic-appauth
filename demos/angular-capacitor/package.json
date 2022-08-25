@@ -33,7 +33,7 @@
     "@ionic-native/status-bar": "5.36.0",
     "@ionic/angular": "6.2.4",
     "capacitor-secure-storage-plugin": "0.8.0",
-    "ionic-appauth": "0.8.5",
+    "ionic-appauth": "github:wi3land/ionic-appauth",
     "rxjs": "6.6.7",
     "tslib": "2.4.0",
     "zone.js": "0.11.8"

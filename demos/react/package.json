@@ -25,7 +25,7 @@
     "axios": "0.27.2",
     "capacitor-secure-storage-plugin": "0.8.0",
     "eslint": "7.11.0",
-    "ionic-appauth": "0.8.5",
+    "ionic-appauth": "github:wi3land/ionic-appauth",
     "ionicons": "5.5.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
