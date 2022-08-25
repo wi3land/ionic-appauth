@@ -1,7 +1,7 @@
 {
   "name": "ionic-appauth",
-  "version": "0.8.6",
-  "description": "Integration for OpenId/AppAuth-JS into Ionic V3/4/5",
+  "version": "0.9.0",
+  "description": "Integration for OpenId/AppAuth-JS into Ionic",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,6 +19,7 @@
     "AppAuth",
     "JavaScript",
     "Ionic",
+    "Capacitor",
     "Cordova",
     "OpenId",
     "Angular",
