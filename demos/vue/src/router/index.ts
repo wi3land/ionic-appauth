@@ -39,21 +39,20 @@ const router = createRouter({
   routes
 })
 
-
 router.beforeEach((to, from, next) => {
   if (to.name === 'Home') {
     Auth.Instance.initComplete$.pipe(
       filter(complete => complete),
       switchMap(() => Auth.Instance.isAuthenticated$),
-        take(1))
-        .subscribe((isAuthenticated) => {
-            if(isAuthenticated) {
-              next();
-            }else{
-              next({ path: '/landing' })
-            }
-        });
-  }else{
+      take(1))
+      .subscribe((isAuthenticated) => {
+        if (isAuthenticated) {
+          next();
+        } else {
+          next({path: '/landing'})
+        }
+      });
+  } else {
     next();
   }
 })
