@@ -1,8 +1,13 @@
 # Angular and Cordova
 
-Configure this app in `src/environments/environment.ts` and run it with `ionic serve`.
+Configure this app in `src/environments/environment.ts` and run it:
 
-## iOS and Cordova
+```
+npm install
+ionic serve
+```
+
+## iOS
 
 Generate an iOS project with the following command:
 
@@ -16,7 +21,7 @@ Open your project in Xcode, configure code signing, and run your app.
 open platforms/ios/MyApp.xcworkspace
 ```
 
-## Android and Cordova
+## Android
 
 Generate an Android project with the following command:
 
