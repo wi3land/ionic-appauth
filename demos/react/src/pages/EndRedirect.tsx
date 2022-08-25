@@ -10,14 +10,14 @@ const EndRedirect : React.FC<EndRedirectPageProps> = (props: EndRedirectPageProp
 
     useIonViewWillEnter(() => {
         Auth.Instance.endSessionCallback();
+        setInterval(() => props.history.replace('landing'), 2500)
     });
-    
+
     return (
         <IonPage>
             <p>Signing out...</p>
         </IonPage>
-        
-    ); 
+    );
 };
 
 export default EndRedirect;
