@@ -283,7 +283,11 @@ export class AuthService implements IAuthService {
             token = new TokenResponse(JSON.parse(tokenResponseString)); 
 
             if(token){
-                return this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageSuccess(token));
+                if (token.isValid(0)){
+                    return this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageSuccess(token));
+                } else {
+                    throw new Error("Token Has Expired");
+                }
             } 
         }
 
