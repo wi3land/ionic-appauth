@@ -1,6 +1,6 @@
 {
   "appId": "com.appauth.demo",
-  "appName": "com.appauth.demo",
+  "appName": "Angular Demo",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

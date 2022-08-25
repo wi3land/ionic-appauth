@@ -3,13 +3,15 @@ import { AuthService } from 'ionic-appauth';
 import { CapacitorBrowser, CapacitorSecureStorage } from 'ionic-appauth/lib/capacitor';
 import { isPlatform } from '@ionic/vue';
 import { AxiosRequestor } from './AxiosService';
+import { CapacitorRequestor } from './CapacitorService';
 
 export class Auth {
 
   private static authService: AuthService | undefined;
 
   private static buildAuthInstance() {
-    const authService = new AuthService(new CapacitorBrowser(), new CapacitorSecureStorage(), new AxiosRequestor());
+    const requestor = isPlatform('ios') ? new CapacitorRequestor() : new AxiosRequestor();
+    const authService = new AuthService(new CapacitorBrowser(), new CapacitorSecureStorage(), requestor);
     authService.authConfig = {
       client_id: 'appauth',
       server_host: 'https://localhost:5001',

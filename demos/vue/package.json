@@ -10,9 +10,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@capacitor-community/http": "^1.4.1",
+    "@capacitor/android": "^4.1.0",
     "@capacitor/app": "^4.0.1",
     "@capacitor/browser": "^4.0.1",
     "@capacitor/core": "4.1.0",
+    "@capacitor/ios": "^4.1.0",
     "@capacitor/preferences": "^4.0.1",
     "@ionic/vue": "^5.4.0",
     "@ionic/vue-router": "^5.4.0",
