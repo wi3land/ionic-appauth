@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IAuthAction, AuthActions, AuthService, AuthObserver } from 'ionic-appauth';
+import { IAuthAction, AuthActions, AuthService } from 'ionic-appauth';
 import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -32,16 +32,16 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  public signOut() {
-    this.auth.signOut();
+  public async signOut() {
+    await this.auth.signOut();
   }
 
   public async getUserInfo(): Promise<void> {
-    this.auth.loadUserInfo();
+    await this.auth.loadUserInfo();
   }
 
   public async refreshToken(): Promise<void> {
-    this.auth.refreshToken();
+    await this.auth.refreshToken();
   }
 
 }

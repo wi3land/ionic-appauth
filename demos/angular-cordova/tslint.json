@@ -142,8 +142,5 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "object-literal-sort-keys": false
-  },
-  "rulesDirectory": [
-    "codelyzer"
-  ]
+  }
 }

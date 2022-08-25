@@ -1,9 +1,9 @@
 {
   "appId": "com.appauth.demo",
-  "appName": "React Demo",
+  "appName": "Vue Demo",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "build",
+  "webDir": "dist",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0

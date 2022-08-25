@@ -2,16 +2,16 @@ import { isPlatform } from '@ionic/react';
 import { App } from '@capacitor/app';
 import { AuthService } from 'ionic-appauth';
 import { CapacitorBrowser, CapacitorSecureStorage } from 'ionic-appauth/lib/capacitor';
-
 import { AxiosRequestor } from './AxiosService';
+import { CapacitorRequestor } from './CapacitorService';
 
+export class Auth {
 
-export class Auth  {
-
-  private static authService : AuthService | undefined;
+  private static authService: AuthService | undefined;
 
   private static buildAuthInstance() {
-    const authService = new AuthService(new CapacitorBrowser(), new CapacitorSecureStorage(), new AxiosRequestor());
+    const requestor = isPlatform('ios') ? new CapacitorRequestor() : new AxiosRequestor();
+    const authService = new AuthService(new CapacitorBrowser(), new CapacitorSecureStorage(), requestor);
     authService.authConfig = {
       client_id: 'appauth',
       server_host: 'https://localhost:5001',
@@ -22,21 +22,20 @@ export class Auth  {
     }
 
     if (isPlatform('capacitor')) {
-      console.log("applistenercreated");
       App.addListener('appUrlOpen', (data: any) => {
         if ((data.url).indexOf(authService.authConfig.redirect_url) === 0) {
           authService.authorizationCallback(data.url);
-        }else{
-            authService.endSessionCallback();
+        } else {
+          authService.endSessionCallback();
         }
       });
     }
-    
+
     authService.init();
     return authService;
   }
 
-  public static get Instance() : AuthService {
+  public static get Instance(): AuthService {
     if (!this.authService) {
       this.authService = this.buildAuthInstance();
     }

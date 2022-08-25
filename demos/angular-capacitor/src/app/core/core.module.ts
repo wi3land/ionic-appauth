@@ -1,12 +1,12 @@
 import { Platform } from '@ionic/angular';
 import { Requestor, StorageBackend } from '@openid/appauth';
-import { APP_INITIALIZER, NgModule, NgZone } from '@angular/core';
+import { NgModule, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Browser, AuthService } from 'ionic-appauth';
+import { AuthService, Browser } from 'ionic-appauth';
 import { CapacitorBrowser, CapacitorSecureStorage } from 'ionic-appauth/lib/capacitor';
-
-import { NgHttpService } from './ng-http.service';
 import { authFactory } from './factories';
+import { httpFactory } from './factories/http.factory';
+import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -19,7 +19,8 @@ import { authFactory } from './factories';
     },
     {
       provide: Requestor,
-      useClass: NgHttpService
+      useFactory: httpFactory,
+      deps: [Platform, HttpClient]
     },
     {
       provide: Browser,

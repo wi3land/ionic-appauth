@@ -12,12 +12,15 @@
 Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
+.angular
 
 *.log
 log.txt
 npm-debug.log*
 
 /.idea
+/ios
+/android
 /.ionic
 /.sass-cache
 /.sourcemaps

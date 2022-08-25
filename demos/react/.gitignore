@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 
+# native
+/android
+/ios
+
 # testing
 /coverage
 

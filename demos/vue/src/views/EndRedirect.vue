@@ -10,12 +10,13 @@ import { IonPage } from '@ionic/vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'EndRedirect',
-    created () {
-        Auth.Instance.endSessionCallback();
-    },
-    components: {
-        IonPage,
-    }
+  name: 'EndRedirect',
+  created() {
+    Auth.Instance.endSessionCallback();
+    setInterval(() => this.$router.push('/landing'), 2500);
+  },
+  components: {
+    IonPage,
+  }
 });
 </script>

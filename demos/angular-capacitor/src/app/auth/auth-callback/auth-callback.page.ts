@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AuthActions, IAuthAction, AuthObserver, AuthService } from 'ionic-appauth';
+import { AuthActions, IAuthAction, AuthService } from 'ionic-appauth';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -26,7 +26,6 @@ export class AuthCallbackPage implements OnInit, OnDestroy {
   }
 
   postCallback(action: IAuthAction) {
-    console.log(JSON.stringify(action))
     if (action.action === AuthActions.SignInSuccess) {
       this.navCtrl.navigateRoot('home');
     }

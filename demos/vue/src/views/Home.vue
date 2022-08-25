@@ -16,7 +16,7 @@
           Action Data
         </ion-card-header>
         <ion-card-content>
-          {{event}}
+          {{ event }}
         </ion-card-content>
       </ion-card>
 
@@ -25,7 +25,7 @@
           User Info
         </ion-card-header>
         <ion-card-content>
-          {{user}}
+          {{ user }}
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -33,46 +33,57 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonButton } from '@ionic/vue';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonButton
+} from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { Auth } from '@/services/AuthService';
 import { AuthActions } from 'ionic-appauth';
 import { Subscription } from 'rxjs';
 
 export default defineComponent({
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'Home',
   data() {
     return {
-        event: '',
-        user: '',
-        subs: [] as Subscription[]
+      event: '',
+      user: '',
+      subs: [] as Subscription[]
     };
   },
-  created () {
+  created() {
     this.subs.push(
-            Auth.Instance.events$.subscribe((action) => {
-                this.event = JSON.stringify(action);
-                if (action.action === AuthActions.SignOutSuccess) {
-                    this.$router.push('/landing');
-                }
-            }),
-            Auth.Instance.user$.subscribe((user) => {
-                this.user = JSON.stringify(user);
-            })
+        Auth.Instance.events$.subscribe((action) => {
+          this.event = JSON.stringify(action);
+          if (action.action === AuthActions.SignOutSuccess) {
+            this.$router.push('/landing');
+          }
+        }),
+        Auth.Instance.user$.subscribe((user) => {
+          this.user = JSON.stringify(user);
+        })
     );
   },
-  beforeUnmount () {
-      this.subs.forEach(sub => sub.unsubscribe());
+  beforeUnmount() {
+    this.subs.forEach(sub => sub.unsubscribe());
   },
   methods: {
     handleSignOut() {
-        Auth.Instance.signOut();
+      Auth.Instance.signOut();
     },
     handleRefresh() {
-        Auth.Instance.refreshToken();
+      Auth.Instance.refreshToken();
     },
     handleGetUserDetails() {
-        Auth.Instance.loadUserInfo();
+      Auth.Instance.loadUserInfo();
     }
   },
   components: {
@@ -81,9 +92,9 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
-    IonCard, 
-    IonCardContent, 
-    IonCardHeader, 
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
     IonButton
   }
 });

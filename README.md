@@ -4,7 +4,7 @@ Ionic App Auth is a implementation of the [AppAuth-JS](https://github.com/openid
 It includes code extensions for core cordova plugins to run the Ionic app such as [Advanced HTTP](https://github.com/silkimen/cordova-plugin-advanced-http) and [SafariViewController](https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller).
 
 The cordova plugins are optional and can be replaced with Angular/React/Vue http handlers and/or Capacitor Plugins.
-This library is intended to be as flexible with compatiblity as Ionic V5 is attempting to be.
+This library is intended to be as flexible with compatibility as Ionic v6 is attempting to be.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Demos have been moved into the main repository to centralise issues.
 - Vanilla: (To Be Completed)
 - Ionic V3: (To Be Completed)
 
-**NOTE**: You can use [OktaDev Schematics](https://github.com/oktadev/schematics#ionic) to install the code from the Angular examples above. Cordova and Capacitor are both supported. The installation isn't Okta-specific, it just prompts you for an `issuer` and `clientId`.
+**NOTE**: You can use [OktaDev Schematics](https://github.com/oktadev/schematics#ionic) to install the code from the Angular examples above. Only Capacitor is supported. The installation isn't Okta-specific, it just prompts you for an `issuer` and `clientId` and works with Auth0 too!
 
 ## Contributing
 
