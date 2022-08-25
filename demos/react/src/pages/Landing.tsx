@@ -12,7 +12,7 @@ interface LandingPageProps extends RouteComponentProps {}
 const Landing : React.FC<LandingPageProps> = (props: LandingPageProps) => {
 
     const [action, setAction] = useState(AuthActionBuilder.Init);
-    
+
     let sub: Subscription;
 
     useIonViewWillEnter(() => {
@@ -27,7 +27,7 @@ const Landing : React.FC<LandingPageProps> = (props: LandingPageProps) => {
     useIonViewDidLeave(() => {
         sub.unsubscribe();
     });
- 
+
     function handleSignIn(e : any) {
         e.preventDefault();
         Auth.Instance.signIn();
@@ -45,7 +45,7 @@ const Landing : React.FC<LandingPageProps> = (props: LandingPageProps) => {
                 <ActionCard action={action}></ActionCard>
             </IonContent>
         </IonPage>
-    ); 
+    );
 };
 
 export default Landing;

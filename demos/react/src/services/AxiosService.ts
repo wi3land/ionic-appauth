@@ -4,14 +4,13 @@ import axios, { AxiosResponse } from 'axios';
 
 export class  AxiosRequestor extends Requestor  {
 
-    
     public async xhr<T>(settings: XhrSettings){
         let instance = axios.create({
             timeout: 2000,
             headers: settings.headers
         });
-    
-        if(!settings.method)   
+
+        if (!settings.method)
             settings.method = "GET";
 
         switch(settings.method){
@@ -24,5 +23,5 @@ export class  AxiosRequestor extends Requestor  {
             case "DELETE":
                 return instance.delete<T>(settings.url).then((value : AxiosResponse<T>) => value.data);
         }
-    } 
+    }
 }
