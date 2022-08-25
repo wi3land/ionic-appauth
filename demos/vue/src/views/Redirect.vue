@@ -12,10 +12,11 @@ import { Subscription } from 'rxjs';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+    // eslint-disable-next-line vue/multi-word-component-names
     name: 'Redirect',
     data() {
         return {
-            sub: Subscription.EMPTY  
+            sub: Subscription.EMPTY
         }
     },
     created() {
@@ -23,7 +24,7 @@ export default defineComponent({
                 if(action.action === AuthActions.SignInSuccess){
                     setInterval(() => this.$router.push('/home'), 2500)
                 }
-                
+
                 if (action.action === AuthActions.SignInFailed) {
                     setInterval(() => this.$router.push('/landing'), 2500)
                 }

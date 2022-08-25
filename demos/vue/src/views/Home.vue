@@ -40,6 +40,7 @@ import { AuthActions } from 'ionic-appauth';
 import { Subscription } from 'rxjs';
 
 export default defineComponent({
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'Home',
   data() {
     return {
@@ -81,9 +82,9 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
-    IonCard, 
-    IonCardContent, 
-    IonCardHeader, 
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
     IonButton
   }
 });
