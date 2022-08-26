@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "pre-commit": "npm run build",
+    "pre-push": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -16,11 +18,14 @@
   "homepage": "https://github.com/wi3land/ionic-appauth#readme",
   "keywords": [
     "OAuth",
+    "OIDC",
     "AppAuth",
     "JavaScript",
+    "TypeScript",
     "Ionic",
     "Cordova",
-    "OpenId",
+    "Capacitor",
+    "OpenID Connect",
     "Angular",
     "React",
     "Vue"
@@ -36,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
     "eslint": "^8.22.0",
+    "husky": "^8.0.1",
     "rxjs": "^6.6.7",
     "typescript": "^4.7.4"
   },
