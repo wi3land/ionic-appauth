@@ -7,9 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "eslint . --ext .ts",
-    "pre-commit": "npm run build",
-    "pre-push": "npm run lint"
+    "lint": "eslint . --ext .ts"
   },
   "repository": {
     "type": "git",
