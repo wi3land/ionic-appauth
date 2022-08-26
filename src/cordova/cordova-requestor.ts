@@ -10,30 +10,41 @@ export interface XhrSettings {
     headers?: any// {key : string, value: any}
 }
 
+type SerializerType = 'json' | 'urlencoded' | 'utf8' | 'multipart' | 'raw';
+
 // REQUIRES CORDOVA PLUGINS
 // cordova-plugin-advanced-http
 export class CordovaRequestor extends Requestor {
 
     constructor(){
-        CordovaDocument.ready(() => HTTP.setDataSerializer('utf8'));
         super();
     }
 
     public async xhr<T>(settings: XhrSettings) : Promise<T> {
-        if(!settings.method)   
+        if(!settings.method)
             settings.method = "GET";
 
         await CordovaDocument.ready();
 
-        switch(settings.method){
-            case "GET":
-                return this.get(settings.url, settings.headers);
-            case "POST":
-                return this.post(settings.url, settings.data, settings.headers);
-            case "PUT":
-                return this.put(settings.url, settings.data, settings.headers);
-            case "DELETE":
-                return this.delete(settings.url, settings.headers);
+        const previousSerializerType = HTTP.getDataSerializer() as SerializerType;
+        HTTP.setDataSerializer('utf8')
+
+        const response = await this.makeRequest<T>(settings);
+
+        HTTP.setDataSerializer(previousSerializerType);
+        return response;
+    }
+
+    private async makeRequest<T>(settings: XhrSettings): Promise<T> {
+        switch (settings.method) {
+        case 'GET':
+            return this.get(settings.url, settings.headers);
+        case 'POST':
+            return this.post(settings.url, settings.data, settings.headers);
+        case 'PUT':
+            return this.put(settings.url, settings.data, settings.headers);
+        case 'DELETE':
+            return this.delete(settings.url, settings.headers);
         }
     }
 

@@ -9,6 +9,7 @@ export interface XhrSettings {
 export declare class CordovaRequestor extends Requestor {
     constructor();
     xhr<T>(settings: XhrSettings): Promise<T>;
+    private makeRequest;
     private get;
     private post;
     private put;
