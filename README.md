@@ -1,6 +1,6 @@
-# Ionic App Auth
+# Ionic AppAuth
 
-Ionic App Auth is a implementation of the [AppAuth-JS](https://github.com/openid/AppAuth-JS) for Ionic Users.
+Ionic AppAuth is a implementation of the [AppAuth-JS](https://github.com/openid/AppAuth-JS) for Ionic Users.
 It includes code extensions for core cordova plugins to run the Ionic app such as [Advanced HTTP](https://github.com/silkimen/cordova-plugin-advanced-http) and [SafariViewController](https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller).
 
 The cordova plugins are optional and can be replaced with Angular/React/Vue http handlers and/or Capacitor Plugins.

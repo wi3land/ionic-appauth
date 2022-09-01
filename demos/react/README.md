@@ -7,6 +7,8 @@ npm install
 npm start
 ```
 
+To see how to configure this app with Okta or Auth0, see [these instructions](https://github.com/oktadev/schematics/#okta-for-ionic).
+
 ## iOS
 
 Generate an iOS project with the following command:
