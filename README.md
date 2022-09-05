@@ -1,5 +1,9 @@
 # Ionic AppAuth
 
+[![Build](https://github.com/wi3land/ionic-appauth/actions/workflows/main.yml/badge.svg)](https://github.com/wi3land/ionic-appauth/actions/workflows/main.yml)
+
+[![Publish](https://github.com/wi3land/ionic-appauth/actions/workflows/publish.yml/badge.svg)](https://github.com/wi3land/ionic-appauth/actions/workflows/publish.yml)
+
 Ionic AppAuth is a implementation of the [AppAuth-JS](https://github.com/openid/AppAuth-JS) for Ionic Users.
 It includes code extensions for core cordova plugins to run the Ionic app such as [Advanced HTTP](https://github.com/silkimen/cordova-plugin-advanced-http) and [SafariViewController](https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller).
 
