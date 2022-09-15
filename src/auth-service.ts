@@ -153,7 +153,7 @@ export class AuthService implements IAuthService {
                 break;
             case AuthActions.LoadTokenFromStorageSuccess:
                 this._tokenSubject.next(action.tokenResponse);
-                this._authenticatedSubject.next(true);
+                this._authenticatedSubject.next(action.tokenResponse.isValid(0));
                 this._initComplete.next(true);
                 break;
             case AuthActions.RevokeTokensSuccess:
@@ -283,11 +283,7 @@ export class AuthService implements IAuthService {
             token = new TokenResponse(JSON.parse(tokenResponseString)); 
 
             if(token){
-                if (token.isValid(0)){
-                    return this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageSuccess(token));
-                } else {
-                    throw new Error("Token Has Expired");
-                }
+                return this.notifyActionListers(AuthActionBuilder.LoadTokenFromStorageSuccess(token));
             } 
         }
 
