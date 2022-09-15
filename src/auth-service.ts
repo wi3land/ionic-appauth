@@ -128,9 +128,6 @@ export class AuthService implements IAuthService {
     }
 
     protected notifyActionListers(action: IAuthAction){
-        this._authSubjectV2.next(action);
-        this._authSubject.notify(action);
-
         switch(action.action) {
             case AuthActions.RefreshFailed:
             case AuthActions.SignInFailed:
@@ -166,6 +163,9 @@ export class AuthService implements IAuthService {
                 this._userSubject.next(undefined);
                 break; 
         }
+
+        this._authSubjectV2.next(action);
+        this._authSubject.notify(action);
     }
     
     protected setupAuthorizationNotifier(){
