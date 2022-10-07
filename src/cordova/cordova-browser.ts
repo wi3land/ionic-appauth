@@ -1,7 +1,7 @@
 import { CordovaDocument } from './cordova-document';
 import { Browser } from '../auth-browser'
-import { SafariViewController } from '@ionic-native/safari-view-controller'
-import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser'
+import { SafariViewController } from '@awesome-cordova-plugins/safari-view-controller'
+import { InAppBrowser, InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser'
 
 // REQUIRES CORDOVA PLUGINS
 // cordova-plugin-safariviewcontroller

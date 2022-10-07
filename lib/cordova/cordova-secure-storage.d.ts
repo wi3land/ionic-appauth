@@ -1,5 +1,5 @@
 import { StorageBackend } from '@openid/appauth';
-import { SecureStorageObject } from '@ionic-native/secure-storage';
+import { SecureStorageObject } from '@awesome-cordova-plugins/secure-storage';
 export declare class CordovaSecureStorage extends StorageBackend {
     private localData;
     private KEYSTORE;
