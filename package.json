@@ -63,7 +63,7 @@
     "@awesome-cordova-plugins/http": "^5.46.0",
     "@awesome-cordova-plugins/in-app-browser": "^5.46.0",
     "@awesome-cordova-plugins/safari-view-controller": "^5.46.0",
-    "@awesome-cordova-plugins/secure-storage": "^5.46.0",
+    "@awesome-cordova-plugins/secure-storage": "^6.0.0",
     "@capacitor/browser": "^4.0.1",
     "@capacitor/core": "^4.3.0",
     "@capacitor/preferences": "^4.0.1",
