@@ -60,7 +60,7 @@
   },
   "optionalDependencies": {
     "@awesome-cordova-plugins/core": "^5.46.0",
-    "@awesome-cordova-plugins/http": "^5.46.0",
+    "@awesome-cordova-plugins/http": "^6.0.0",
     "@awesome-cordova-plugins/in-app-browser": "^5.46.0",
     "@awesome-cordova-plugins/safari-view-controller": "^5.46.0",
     "@awesome-cordova-plugins/secure-storage": "^5.46.0",
