@@ -268,6 +268,7 @@ export class AuthService implements IAuthService {
           refresh_token: this._tokenSubject.value?.refreshToken,
           redirect_uri: this.authConfig.redirect_url,
           client_id: this.authConfig.client_id,
+          extras: { "client_secret": this.authConfig.client_secret }
         }    
         
         let token : TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON))
