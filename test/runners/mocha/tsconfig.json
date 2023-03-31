@@ -1,7 +1,6 @@
 // typescript config for mocha
 {
-    "compilerOptions": {
-        // mocha runs in node, which uses commonjs modules
-        "module": "CommonJs"
+    "compilerOptions":{
+      "module":"CommonJs"
     }
 }

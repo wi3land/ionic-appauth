@@ -7,27 +7,26 @@ export interface EndSessionRequestJson {
 }
 
 const BYTES_LENGTH = 10;
-const newState = function(crypto: Crypto): string {
-    return crypto.generateRandom(BYTES_LENGTH);
-  };
-  
+const newState = function (crypto: Crypto): string {
+  return crypto.generateRandom(BYTES_LENGTH);
+};
 
 export class EndSessionRequest {
-
   state: string;
   idTokenHint: string;
   postLogoutRedirectURI: string;
 
-  constructor(
-    request: EndSessionRequestJson,
-    crypto : Crypto = new DefaultCrypto()) {
-      this.state = request.state || newState(crypto);
-      this.idTokenHint = request.idTokenHint;
-      this.postLogoutRedirectURI = request.postLogoutRedirectURI;
-    }
+  constructor(request: EndSessionRequestJson, crypto: Crypto = new DefaultCrypto()) {
+    this.state = request.state || newState(crypto);
+    this.idTokenHint = request.idTokenHint;
+    this.postLogoutRedirectURI = request.postLogoutRedirectURI;
+  }
 
   toJson(): EndSessionRequestJson {
-    let json: EndSessionRequestJson = {idTokenHint: this.idTokenHint, postLogoutRedirectURI : this.postLogoutRedirectURI };
+    let json: EndSessionRequestJson = {
+      idTokenHint: this.idTokenHint,
+      postLogoutRedirectURI: this.postLogoutRedirectURI,
+    };
 
     if (this.state) {
       json['state'] = this.state;
@@ -35,5 +34,4 @@ export class EndSessionRequest {
 
     return json;
   }
-
 }

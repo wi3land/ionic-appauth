@@ -7,7 +7,7 @@
     "test": "mocha --config test/runners/mocha/.mocharc.jsonc",
     "test:coverage": "nyc npm run test",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
@@ -50,6 +50,7 @@
     "husky": "^8.0.1",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
+    "prettier": "^2.8.7",
     "rxjs": "^7.5.7",
     "ts-mockito": "^2.6.1",
     "ts-node": "^10.9.1",

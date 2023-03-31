@@ -1,18 +1,19 @@
 {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "check-coverage": true,
-    "all": true,
-    "include": [
-        "src/**/!(*.spec.*).[tj]s?(x)"
+    "extends":"@istanbuljs/nyc-config-typescript",
+    "check-coverage":true,
+    "all":true,
+    "include":[
+      "src/**/!(*.spec.*).[tj]s?(x)"
     ],
-    "exclude": [
-        "test/**/*.*", "src/**/index.ts"
+    "exclude":[
+      "test/**/*.*",
+      "src/**/index.ts"
     ],
-    "reporter": [
-        "html",
-        "lcov",
-        "text",
-        "text-summary"
+    "reporter":[
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
     ],
-    "report-dir": "coverage"
+    "report-dir":"coverage"
 }
