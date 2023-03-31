@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha --config test/runners/mocha/.mocharc.jsonc",
+    "test:coverage": "nyc npm run test",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint . --ext .ts",
@@ -38,6 +39,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.8.3",
@@ -47,6 +49,7 @@
     "eslint": "^8.25.0",
     "husky": "^8.0.1",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "rxjs": "^7.5.7",
     "ts-mockito": "^2.6.1",
     "ts-node": "^10.9.1",
