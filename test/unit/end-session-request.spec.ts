@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { when } from 'ts-mockito';
 import { EndSessionRequest, EndSessionRequestJson } from '../../src/end-session-request';
 
 describe('end Session Request Tests', () => {

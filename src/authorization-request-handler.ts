@@ -36,11 +36,10 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
 
   public async performAuthorizationRequest(configuration: AuthorizationServiceConfiguration, request: AuthorizationRequest): Promise<void> {
     let handle = this.generateRandom.generateRandom(10);
-    this.storage.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle);
-    this.storage.setItem(authorizationRequestKey(handle), JSON.stringify(await request.toJson()));
+    await this.storage.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle);
+    await this.storage.setItem(authorizationRequestKey(handle), JSON.stringify(await request.toJson()));
     let url = this.buildRequestUrl(configuration, request);
     let returnedUrl: string | undefined = await this.browser.showWindow(url, request.redirectUri);
-
     //callback may come from showWindow or via another method
     if (returnedUrl != undefined) {
       await this.storage.setItem(AUTHORIZATION_RESPONSE_KEY, returnedUrl);
@@ -50,7 +49,6 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
 
   protected async completeAuthorizationRequest(): Promise<AuthorizationRequestResponse> {
     let handle = await this.storage.getItem(AUTHORIZATION_REQUEST_HANDLE_KEY);
-
     if (!handle) {
       throw new Error('Handle Not Available');
     }
@@ -58,6 +56,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     let request: AuthorizationRequest = this.getAuthorizationRequest(await this.storage.getItem(authorizationRequestKey(handle)));
     let queryParams = this.getQueryParams(await this.storage.getItem(AUTHORIZATION_RESPONSE_KEY));
     this.removeItemsFromStorage(handle);
+   
 
     let state: string | undefined = queryParams['state'];
     let error: string | undefined = queryParams['error'];
@@ -77,7 +76,6 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     if (authRequest == null) {
       throw new Error('No Auth Request Available');
     }
-
     return new AuthorizationRequest(JSON.parse(authRequest));
   }
 
@@ -106,6 +104,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
   }
 
   private getQueryParams(authResponse: string | null): StringMap {
+
     if (authResponse != null) {
       let querySide: string = authResponse.split('#')[0];
       let parts: string[] = querySide.split('?');
