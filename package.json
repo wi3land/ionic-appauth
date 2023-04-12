@@ -38,13 +38,13 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^18.8.3",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
-    "eslint": "^8.25.0",
-    "husky": "^8.0.1",
-    "rxjs": "^7.5.7",
-    "typescript": "^4.8.4"
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
+    "eslint": "^8.38.0",
+    "husky": "^8.0.3",
+    "rxjs": "^7.8.0",
+    "typescript": "4.8.2"
   },
   "files": [
     "lib/**/*"
@@ -53,21 +53,21 @@
   "dependencies": {
     "@openid/appauth": "^1.3.1",
     "guid-typescript": "^1.0.9",
-    "tslib": "^2.4.0"
+    "tslib": "^2.5.0"
   },
   "peerDependencies": {
-    "rxjs": "^6.6.7 || ^7.5.7"
+    "rxjs": "^7.5.7 || ^7.8.0"
   },
   "optionalDependencies": {
-    "@awesome-cordova-plugins/core": "^5.46.0",
-    "@awesome-cordova-plugins/http": "^5.46.0",
-    "@awesome-cordova-plugins/in-app-browser": "^5.46.0",
-    "@awesome-cordova-plugins/safari-view-controller": "^5.46.0",
-    "@awesome-cordova-plugins/secure-storage": "^5.46.0",
-    "@capacitor/browser": "^4.0.1",
-    "@capacitor/core": "^4.3.0",
-    "@capacitor/preferences": "^4.0.1",
+    "@awesome-cordova-plugins/core": "^6.3.0",
+    "@awesome-cordova-plugins/http": "^6.3.0",
+    "@awesome-cordova-plugins/in-app-browser": "^6.3.0",
+    "@awesome-cordova-plugins/safari-view-controller": "^6.3.0",
+    "@awesome-cordova-plugins/secure-storage": "^6.3.0",
+    "@capacitor/browser": "^4.1.1",
+    "@capacitor/core": "^4.7.3",
+    "@capacitor/preferences": "^4.0.2",
     "@ionic/storage": "^3.0.6",
-    "capacitor-secure-storage-plugin": "^0.8.0"
+    "capacitor-secure-storage-plugin": "^0.8.1"
   }
 }
