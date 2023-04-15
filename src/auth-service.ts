@@ -254,7 +254,6 @@ export class AuthService implements IAuthService {
     };
 
     let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
-
     if (this.authConfig.pkce) await request.setupCodeVerifier();
 
     return this.requestHandler.performAuthorizationRequest(await this.configuration, request);

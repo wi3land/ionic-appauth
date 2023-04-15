@@ -15,10 +15,10 @@ describe('end Session request handler Tests', () => {
 
     const mockedBrowserClass: Browser = mock(DefaultBrowser);
     const returnedUrl = 'returnedUrlTest';
-    const promiseUrlString: Promise <string> = new Promise((resolve) => {
+    const promiseUrlString: Promise<string> = new Promise((resolve) => {
       resolve(returnedUrl);
     });
-    
+
     when(mockedBrowserClass.showWindow(anything(), anything())).thenReturn(promiseUrlString);
     const mockedBrowser = instance(mockedBrowserClass);
 

@@ -1,6 +1,8 @@
 // typescript config for mocha
 {
     "compilerOptions":{
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
       "module":"CommonJs"
     }
 }

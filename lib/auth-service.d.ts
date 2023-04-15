@@ -3,7 +3,7 @@ import { IAuthAction } from './auth-action';
 import { UserInfoHandler } from './user-info-request-handler';
 import { EndSessionHandler } from './end-session-request-handler';
 import { IAuthConfig } from './auth-configuration';
-import { Browser } from "./auth-browser";
+import { Browser } from './auth-browser';
 import { StorageBackend, Requestor, AuthorizationServiceConfiguration, TokenResponse, AuthorizationRequest, AuthorizationResponse, AuthorizationError, TokenRequestHandler } from '@openid/appauth';
 import { Observable } from 'rxjs';
 import { AuthObserver, BaseAuthObserver } from './auth-observer';

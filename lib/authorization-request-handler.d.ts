@@ -1,5 +1,5 @@
-import { AuthorizationRequestHandler, StorageBackend, BasicQueryStringUtils, DefaultCrypto, AuthorizationServiceConfiguration, AuthorizationRequest, AuthorizationRequestResponse } from "@openid/appauth";
-import { Browser } from "./auth-browser";
+import { AuthorizationRequestHandler, StorageBackend, BasicQueryStringUtils, DefaultCrypto, AuthorizationServiceConfiguration, AuthorizationRequest, AuthorizationRequestResponse } from '@openid/appauth';
+import { Browser } from './auth-browser';
 export declare const AUTHORIZATION_RESPONSE_KEY = "auth_response";
 export declare class IonicAuthorizationRequestHandler extends AuthorizationRequestHandler {
     private browser;

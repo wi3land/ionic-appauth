@@ -1,5 +1,5 @@
 import { EndSessionRequest } from './end-session-request';
-import { AuthorizationServiceConfiguration, BasicQueryStringUtils } from "@openid/appauth";
+import { AuthorizationServiceConfiguration, BasicQueryStringUtils } from '@openid/appauth';
 import { Browser } from './auth-browser';
 export interface EndSessionHandler {
     performEndSessionRequest(configuration: AuthorizationServiceConfiguration, request: EndSessionRequest): Promise<string | undefined>;

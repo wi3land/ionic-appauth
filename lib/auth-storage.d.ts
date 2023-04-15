@@ -1,4 +1,4 @@
-import { StorageBackend } from "@openid/appauth";
+import { StorageBackend } from '@openid/appauth';
 import { Storage } from '@ionic/storage';
 export declare class IonicStorage implements StorageBackend {
     store: Storage;

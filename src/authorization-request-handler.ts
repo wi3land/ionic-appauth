@@ -56,7 +56,6 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     let request: AuthorizationRequest = this.getAuthorizationRequest(await this.storage.getItem(authorizationRequestKey(handle)));
     let queryParams = this.getQueryParams(await this.storage.getItem(AUTHORIZATION_RESPONSE_KEY));
     this.removeItemsFromStorage(handle);
-   
 
     let state: string | undefined = queryParams['state'];
     let error: string | undefined = queryParams['error'];
@@ -104,7 +103,6 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
   }
 
   private getQueryParams(authResponse: string | null): StringMap {
-
     if (authResponse != null) {
       let querySide: string = authResponse.split('#')[0];
       let parts: string[] = querySide.split('?');

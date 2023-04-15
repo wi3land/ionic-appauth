@@ -1,4 +1,4 @@
-import { TokenResponse } from "@openid/appauth";
+import { TokenResponse } from '@openid/appauth';
 export interface IAuthSession {
     isAuthenticated: boolean;
     token?: TokenResponse;

@@ -2,7 +2,7 @@ import { Requestor } from '@openid/appauth';
 export interface XhrSettings {
     url: string;
     dataType?: string;
-    method?: "GET" | "POST" | "PUT" | "DELETE";
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
     data?: any;
     headers?: any;
 }
