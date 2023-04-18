@@ -93,7 +93,9 @@ describe('auth service Tests', () => {
     const authService: AuthService = await buildAuthServiceAndInit(false);
     await authService.authorizationCallback('callbackUrl');
     await authService.loadUserInfo();
-    const action: IAuthAction = { action: AuthActions.SignInFailed };
+    const action: IAuthAction = {
+      action: AuthActions.SignInFailed,
+    };
     await authService.removeActionObserver(AuthObserver.Create((action) => {}));
     await authService.endSessionCallback();
   });

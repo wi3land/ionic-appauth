@@ -12,7 +12,9 @@ describe('capacitor storage Tests', () => {
     const storage: CapacitorStorage = new CapacitorStorage();
 
     mockManager.mock('set');
-    mockManager.mock('get', [KEY]).returns({ value });
+    mockManager.mock('get', [KEY]).returns({
+      value,
+    });
     mockManager.mock('remove');
     mockManager.mock('clear');
     await storage.setItem(KEY, value);

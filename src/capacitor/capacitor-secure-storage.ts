@@ -7,8 +7,12 @@ export class CapacitorSecureStorage implements StorageBackend {
   async getItem(name: string): Promise<string | null> {
     if (!SecureStoragePlugin) throw new Error('Capacitor Secure Storage Is Undefined!');
 
-    const returned = await SecureStoragePlugin.get({ key: name }).catch(() => {
-      return { value: null };
+    const returned = await SecureStoragePlugin.get({
+      key: name,
+    }).catch(() => {
+      return {
+        value: null,
+      };
     });
     return returned.value;
   }
@@ -16,7 +20,9 @@ export class CapacitorSecureStorage implements StorageBackend {
   removeItem(name: string): Promise<void> {
     if (!SecureStoragePlugin) throw new Error('Capacitor Secure Storage Is Undefined!');
 
-    return SecureStoragePlugin.remove({ key: name }).then(() => {});
+    return SecureStoragePlugin.remove({
+      key: name,
+    }).then(() => {});
   }
 
   clear(): Promise<void> {
@@ -28,6 +34,9 @@ export class CapacitorSecureStorage implements StorageBackend {
   setItem(name: string, value: string): Promise<void> {
     if (!SecureStoragePlugin) throw new Error('Capacitor Secure Storage Is Undefined!');
 
-    return SecureStoragePlugin.set({ key: name, value: value }).then(() => {});
+    return SecureStoragePlugin.set({
+      key: name,
+      value: value,
+    }).then(() => {});
   }
 }

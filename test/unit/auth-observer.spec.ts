@@ -12,12 +12,16 @@ describe('auth observer Tests', () => {
 
   it(`should do success creating Token Observer`, async () => {
     const observer: TokenObserver = new TokenObserver();
-    const action: IAuthAction = { action: AuthActions.SignInFailed };
+    const action: IAuthAction = {
+      action: AuthActions.SignInFailed,
+    };
     observer.update(action);
   });
 
   it(`should do success creating Console Log Observer`, async () => {
     const observer: ConsoleLogObserver = new ConsoleLogObserver();
-    observer.update({ action: AuthActions.RefreshFailed });
+    observer.update({
+      action: AuthActions.RefreshFailed,
+    });
   });
 });
