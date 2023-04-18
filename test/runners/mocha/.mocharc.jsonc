@@ -1,0 +1,8 @@
+{
+    "require": [
+        "test/runners/mocha/init.js", "mock-local-storage"
+    ],
+    "spec": [
+        "test/**/*.spec.ts"
+    ]
+}
