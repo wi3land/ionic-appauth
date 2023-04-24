@@ -59,7 +59,7 @@
     "ts-mock-imports": "^1.3.8",
     "ts-mockito": "^2.6.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.2"
+    "typescript": "^5.0.4"
   },
   "files": [
     "lib/**/*"
