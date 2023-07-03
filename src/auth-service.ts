@@ -69,11 +69,12 @@ export class AuthService implements IAuthService {
   constructor(
     protected browser: Browser = new DefaultBrowser(),
     protected storage: StorageBackend = new LocalStorageBackend(),
-    protected requestor: Requestor = new JQueryRequestor()
+    protected requestor: Requestor = new JQueryRequestor(),
+    protected crypto: Crypto = new DefaultCrypto()
   ) {
     this.tokenHandler = new BaseTokenRequestHandler(requestor);
     this.userInfoHandler = new IonicUserInfoHandler(requestor);
-    this.requestHandler = new IonicAuthorizationRequestHandler(browser, storage);
+    this.requestHandler = new IonicAuthorizationRequestHandler(browser, storage, crypto);
     this.endSessionHandler = new IonicEndSessionHandler(browser);
   }
 
@@ -230,7 +231,7 @@ export class AuthService implements IAuthService {
         state: state || undefined,
       };
 
-      let request: EndSessionRequest = new EndSessionRequest(requestJson);
+      let request: EndSessionRequest = new EndSessionRequest(requestJson, this.crypto);
       let returnedUrl: string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
 
       //callback may come from showWindow or via another method
@@ -253,7 +254,7 @@ export class AuthService implements IAuthService {
       state: state || undefined,
     };
 
-    let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
+    let request = new AuthorizationRequest(requestJson, this.crypto, this.authConfig.pkce);
     if (this.authConfig.pkce) await request.setupCodeVerifier();
 
     return this.requestHandler.performAuthorizationRequest(await this.configuration, request);
