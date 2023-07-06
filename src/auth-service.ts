@@ -70,7 +70,7 @@ export class AuthService implements IAuthService {
     protected browser: Browser = new DefaultBrowser(),
     protected storage: StorageBackend = new LocalStorageBackend(),
     protected requestor: Requestor = new JQueryRequestor(),
-    protected crypto: Crypto = new DefaultCrypto()
+    protected crypto = new DefaultCrypto()
   ) {
     this.tokenHandler = new BaseTokenRequestHandler(requestor);
     this.userInfoHandler = new IonicUserInfoHandler(requestor);

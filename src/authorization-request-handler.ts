@@ -28,8 +28,8 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
   constructor(
     private browser: Browser,
     private storage: StorageBackend,
-    private crypto = new DefaultCrypto(),
-    private utils = new BasicQueryStringUtils()
+    crypto = new DefaultCrypto(),
+    utils = new BasicQueryStringUtils()
   ) {
     super(utils, crypto);
   }
