@@ -223,24 +223,20 @@ export class AuthService implements IAuthService {
   }
 
   protected async performEndSessionRequest(state?: string): Promise<void> {
-    if (this._tokenSubject.value != undefined) {
-      let requestJson: EndSessionRequestJson = {
-        postLogoutRedirectURI: this.authConfig.end_session_redirect_url,
-        idTokenHint: this._tokenSubject.value.idToken || '',
-        state: state || undefined,
-      };
 
-      let request: EndSessionRequest = new EndSessionRequest(requestJson);
-      let returnedUrl: string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
+    let requestJson: EndSessionRequestJson = {
+      postLogoutRedirectURI: this.authConfig.end_session_redirect_url,
+      idTokenHint: this._tokenSubject.value ? this._tokenSubject.value.idToken || '' : '',
+      state: state || undefined,
+    };
+    let request: EndSessionRequest = new EndSessionRequest(requestJson);
+    let returnedUrl: string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
 
-      //callback may come from showWindow or via another method
-      if (returnedUrl != undefined) {
-        this.endSessionCallback();
-      }
-    } else {
-      //if user has no token they should not be logged in in the first place
+    //callback may come from showWindow or via another method
+    if (returnedUrl != undefined) {
       this.endSessionCallback();
     }
+
   }
 
   protected async performAuthorizationRequest(authExtras?: StringMap, state?: string): Promise<void> {
@@ -354,11 +350,15 @@ export class AuthService implements IAuthService {
   }
 
   public async signOut(state?: string, revokeTokens?: boolean) {
+
     if (revokeTokens) {
       await this.revokeTokens();
     }
+    const token = await this.storage.getItem(TOKEN_RESPONSE_KEY);
 
-    await this.storage.removeItem(TOKEN_RESPONSE_KEY);
+    if (token) {
+      await this.storage.removeItem(TOKEN_RESPONSE_KEY);
+    }
 
     if ((await this.configuration).endSessionEndpoint) {
       await this.performEndSessionRequest(state).catch((response) => {
