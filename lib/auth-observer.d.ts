@@ -1,9 +1,8 @@
 import { IAuthAction } from './auth-action';
 import { TokenResponse } from '@openid/appauth';
-import { Guid } from 'guid-typescript';
 import { IAuthSession } from './auth-session';
 export declare abstract class BaseAuthObserver {
-  protected id: Guid;
+  protected id: string;
   abstract update(action: IAuthAction): void;
 }
 export declare class AuthObserver extends BaseAuthObserver {

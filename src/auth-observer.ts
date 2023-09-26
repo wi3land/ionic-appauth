@@ -1,10 +1,10 @@
 import { IAuthAction, AuthActions } from './auth-action';
 import { TokenResponse } from '@openid/appauth';
-import { Guid } from 'guid-typescript';
+import { v4 as uuidv4 } from 'uuid';
 import { DefaultAuthSession, IAuthSession } from './auth-session';
 
 export abstract class BaseAuthObserver {
-  protected id: Guid = Guid.create();
+  protected id = uuidv4();
   abstract update(action: IAuthAction): void;
 }
 
