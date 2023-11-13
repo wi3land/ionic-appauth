@@ -22,7 +22,7 @@
     "@types/react-dom": "17.0.9",
     "@types/react-router": "5.1.16",
     "@types/react-router-dom": "5.1.8",
-    "axios": "0.27.2",
+    "axios": "1.6.0",
     "capacitor-secure-storage-plugin": "0.8.0",
     "eslint": "7.11.0",
     "ionic-appauth": "github:wi3land/ionic-appauth",
