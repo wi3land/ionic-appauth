@@ -1,23 +1,24 @@
-import { CordovaDocument } from './cordova-document';
-import { StorageBackend } from '@openid/appauth';
 import { SecureStorage, SecureStorageObject } from '@awesome-cordova-plugins/secure-storage';
+import { StorageBackend } from '@openid/appauth';
+
+import { CordovaDocument } from './cordova-document';
 
 // REQUIRES CORDOVA PLUGINS
 // cordova-plugin-secure-storage
 export class CordovaSecureStorage extends StorageBackend {
   private localData: any = {};
-  private KEYSTORE: string = 'SecretStore';
+  private KEYSTORE = 'SecretStore';
 
   public async SecureStorageExists(): Promise<boolean> {
     await CordovaDocument.ready();
     return SecureStorage.create(this.KEYSTORE).then(
       () => true,
-      () => false
+      () => false,
     );
   }
 
   public async hasRecord(store: SecureStorageObject, key: string) {
-    let keys: string[] = await store.keys();
+    const keys: string[] = await store.keys();
     return keys.indexOf(key) > -1;
   }
 
