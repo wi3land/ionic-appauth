@@ -7,7 +7,7 @@
     "test": "mocha --config test/runners/mocha/.mocharc.jsonc",
     "test:coverage": "nyc npm run test",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"lib/**/*.*\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
