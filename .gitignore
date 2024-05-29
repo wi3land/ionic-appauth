@@ -10,3 +10,9 @@ node_modules
 # ignore coverage folder
 coverage
 .nyc_output
+
+# makes bun optional
+bun.lockb
+
+# ignore final build files
+lib

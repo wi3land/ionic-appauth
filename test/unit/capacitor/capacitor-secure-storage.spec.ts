@@ -1,10 +1,11 @@
-import { expect } from 'chai';
-import { CapacitorSecureStorage } from '../../../src/capacitor/capacitor-secure-storage';
-import { ImportMock } from 'ts-mock-imports';
 import * as secureStorageModule from 'capacitor-secure-storage-plugin';
+import { expect } from 'chai';
+import { ImportMock } from 'ts-mock-imports';
 
-const KEY: string = 'KEY';
-const value: string = 'value';
+import { CapacitorSecureStorage } from '../../../src/capacitor/capacitor-secure-storage';
+
+const KEY = 'KEY';
+const value = 'value';
 const mockManager = ImportMock.mockStaticClass(secureStorageModule, 'SecureStoragePlugin');
 
 describe('capacitor secure storage Tests', () => {
@@ -22,7 +23,7 @@ describe('capacitor secure storage Tests', () => {
       new Promise((resolve, reject) => {
         resolve(value);
         reject(null);
-      })
+      }),
     );
     storage.getItem(KEY).then((returnedValue) => {
       expect(returnedValue).to.be.equal(value);

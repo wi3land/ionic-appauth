@@ -1,34 +1,40 @@
-import { AuthorizationRequestHandler, RevokeTokenRequest, RevokeTokenRequestJson, StringMap } from '@openid/appauth';
-import { IAuthAction, AuthActionBuilder, AuthActions } from './auth-action';
-import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
-import { IonicEndSessionHandler, EndSessionHandler } from './end-session-request-handler';
-import { IAuthConfig } from './auth-configuration';
-import { IonicAuthorizationRequestHandler, AUTHORIZATION_RESPONSE_KEY } from './authorization-request-handler';
-import { Browser, DefaultBrowser } from './auth-browser';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+import type { Crypto } from '@openid/appauth';
 import {
-  StorageBackend,
-  Requestor,
-  BaseTokenRequestHandler,
-  AuthorizationServiceConfiguration,
+  AuthorizationError,
   AuthorizationNotifier,
-  TokenResponse,
-  AuthorizationRequestJson,
   AuthorizationRequest,
+  AuthorizationRequestHandler,
+  AuthorizationRequestJson,
+  AuthorizationResponse,
+  AuthorizationServiceConfiguration,
+  BaseTokenRequestHandler,
   DefaultCrypto,
   GRANT_TYPE_AUTHORIZATION_CODE,
-  TokenRequestJson,
-  TokenRequest,
   GRANT_TYPE_REFRESH_TOKEN,
-  AuthorizationResponse,
-  AuthorizationError,
-  LocalStorageBackend,
   JQueryRequestor,
+  LocalStorageBackend,
+  Requestor,
+  RevokeTokenRequest,
+  RevokeTokenRequestJson,
+  StorageBackend,
+  StringMap,
+  TokenRequest,
   TokenRequestHandler,
+  TokenRequestJson,
+  TokenResponse,
 } from '@openid/appauth';
-import { EndSessionRequestJson, EndSessionRequest } from './end-session-request';
-import { BehaviorSubject, Observable } from 'rxjs';
+
+import { AuthActionBuilder, AuthActions, IAuthAction } from './auth-action';
+import { Browser, DefaultBrowser } from './auth-browser';
+import { IAuthConfig } from './auth-configuration';
 import { ActionHistoryObserver, AuthObserver, BaseAuthObserver, SessionObserver } from './auth-observer';
 import { AuthSubject } from './auth-subject';
+import { AUTHORIZATION_RESPONSE_KEY, IonicAuthorizationRequestHandler } from './authorization-request-handler';
+import { EndSessionRequest, EndSessionRequestJson } from './end-session-request';
+import { EndSessionHandler, IonicEndSessionHandler } from './end-session-request-handler';
+import { IonicUserInfoHandler, UserInfoHandler } from './user-info-request-handler';
 
 const TOKEN_RESPONSE_KEY = 'token_response';
 const AUTH_EXPIRY_BUFFER = 10 * 60 * -1; // 10 mins in seconds
@@ -69,11 +75,12 @@ export class AuthService implements IAuthService {
   constructor(
     protected browser: Browser = new DefaultBrowser(),
     protected storage: StorageBackend = new LocalStorageBackend(),
-    protected requestor: Requestor = new JQueryRequestor()
+    protected requestor: Requestor = new JQueryRequestor(),
+    protected crypto: Crypto = new DefaultCrypto(),
   ) {
     this.tokenHandler = new BaseTokenRequestHandler(requestor);
     this.userInfoHandler = new IonicUserInfoHandler(requestor);
-    this.requestHandler = new IonicAuthorizationRequestHandler(browser, storage);
+    this.requestHandler = new IonicAuthorizationRequestHandler(browser, storage, crypto);
     this.endSessionHandler = new IonicEndSessionHandler(browser);
   }
 
@@ -188,7 +195,7 @@ export class AuthService implements IAuthService {
   }
 
   protected setupAuthorizationNotifier() {
-    let notifier = new AuthorizationNotifier();
+    const notifier = new AuthorizationNotifier();
     this.requestHandler.setAuthorizationNotifier(notifier);
     notifier.setAuthorizationListener((request, response, error) => this.onAuthorizationNotification(request, response, error));
   }
@@ -196,9 +203,9 @@ export class AuthService implements IAuthService {
   protected onAuthorizationNotification(
     request: AuthorizationRequest,
     response: AuthorizationResponse | null,
-    error: AuthorizationError | null
+    error: AuthorizationError | null,
   ) {
-    let codeVerifier: string | undefined =
+    const codeVerifier: string | undefined =
       request.internal != undefined && this.authConfig.pkce ? request.internal.code_verifier : undefined;
 
     if (response != null) {
@@ -223,24 +230,22 @@ export class AuthService implements IAuthService {
   }
 
   protected async performEndSessionRequest(state?: string): Promise<void> {
-
-    let requestJson: EndSessionRequestJson = {
+    const requestJson: EndSessionRequestJson = {
       postLogoutRedirectURI: this.authConfig.end_session_redirect_url,
       idTokenHint: this._tokenSubject.value ? this._tokenSubject.value.idToken || '' : '',
       state: state || undefined,
     };
-    let request: EndSessionRequest = new EndSessionRequest(requestJson);
-    let returnedUrl: string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
+    const request: EndSessionRequest = new EndSessionRequest(requestJson, this.crypto);
+    const returnedUrl: string | undefined = await this.endSessionHandler.performEndSessionRequest(await this.configuration, request);
 
     //callback may come from showWindow or via another method
     if (returnedUrl != undefined) {
       this.endSessionCallback();
     }
-
   }
 
   protected async performAuthorizationRequest(authExtras?: StringMap, state?: string): Promise<void> {
-    let requestJson: AuthorizationRequestJson = {
+    const requestJson: AuthorizationRequestJson = {
       response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
       client_id: this.authConfig.client_id,
       redirect_uri: this.authConfig.redirect_url,
@@ -249,14 +254,14 @@ export class AuthService implements IAuthService {
       state: state || undefined,
     };
 
-    let request = new AuthorizationRequest(requestJson, new DefaultCrypto(), this.authConfig.pkce);
+    const request = new AuthorizationRequest(requestJson, this.crypto, this.authConfig.pkce);
     if (this.authConfig.pkce) await request.setupCodeVerifier();
 
     return this.requestHandler.performAuthorizationRequest(await this.configuration, request);
   }
 
   protected async requestAccessToken(code: string, codeVerifier?: string): Promise<void> {
-    let requestJSON: TokenRequestJson = {
+    const requestJSON: TokenRequestJson = {
       grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
       code: code,
       refresh_token: undefined,
@@ -272,7 +277,7 @@ export class AuthService implements IAuthService {
           },
     };
 
-    let token: TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
+    const token: TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
     await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
     this.notifyActionListers(AuthActionBuilder.SignInSuccess(token));
   }
@@ -282,21 +287,21 @@ export class AuthService implements IAuthService {
       throw new Error('No Token Defined!');
     }
 
-    let requestJSON: TokenRequestJson = {
+    const requestJSON: TokenRequestJson = {
       grant_type: GRANT_TYPE_REFRESH_TOKEN,
       refresh_token: this._tokenSubject.value?.refreshToken,
       redirect_uri: this.authConfig.redirect_url,
       client_id: this.authConfig.client_id,
     };
 
-    let token: TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
+    const token: TokenResponse = await this.tokenHandler.performTokenRequest(await this.configuration, new TokenRequest(requestJSON));
     await this.storage.setItem(TOKEN_RESPONSE_KEY, JSON.stringify(token.toJson()));
     this.notifyActionListers(AuthActionBuilder.RefreshSuccess(token));
   }
 
   protected async internalLoadTokenFromStorage() {
     let token: TokenResponse | undefined;
-    let tokenResponseString: string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
+    const tokenResponseString: string | null = await this.storage.getItem(TOKEN_RESPONSE_KEY);
 
     if (tokenResponseString != null) {
       token = new TokenResponse(JSON.parse(tokenResponseString));
@@ -310,13 +315,13 @@ export class AuthService implements IAuthService {
   }
 
   protected async requestTokenRevoke() {
-    let revokeRefreshJson: RevokeTokenRequestJson = {
+    const revokeRefreshJson: RevokeTokenRequestJson = {
       token: this._tokenSubject.value.refreshToken,
       token_type_hint: 'refresh_token',
       client_id: this.authConfig.client_id,
     };
 
-    let revokeAccessJson: RevokeTokenRequestJson = {
+    const revokeAccessJson: RevokeTokenRequestJson = {
       token: this._tokenSubject.value.accessToken,
       token_type_hint: 'access_token',
       client_id: this.authConfig.client_id,
@@ -330,7 +335,7 @@ export class AuthService implements IAuthService {
 
   protected async internalRequestUserInfo() {
     if (this._tokenSubject.value) {
-      let userInfo = await this.userInfoHandler.performUserInfoRequest(await this.configuration, this._tokenSubject.value);
+      const userInfo = await this.userInfoHandler.performUserInfoRequest(await this.configuration, this._tokenSubject.value);
       this.notifyActionListers(AuthActionBuilder.LoadUserInfoSuccess(userInfo));
     } else {
       throw new Error('No Token Available');
@@ -350,7 +355,6 @@ export class AuthService implements IAuthService {
   }
 
   public async signOut(state?: string, revokeTokens?: boolean) {
-
     if (revokeTokens) {
       await this.revokeTokens();
     }
@@ -420,7 +424,7 @@ export class AuthService implements IAuthService {
    * please use $ suffixed observers in future
    */
   public addActionListener(func: (action: IAuthAction) => void): AuthObserver {
-    let observer: AuthObserver = AuthObserver.Create(func);
+    const observer: AuthObserver = AuthObserver.Create(func);
     this.addActionObserver(observer);
     return observer;
   }

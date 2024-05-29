@@ -5,7 +5,7 @@ import { Browser, DefaultBrowser } from '../../src/auth-browser';
 import { DefaultCrypto, AuthorizationServiceConfiguration, AuthorizationRequest, AuthorizationRequestJson } from '@openid/appauth';
 import { IonicStorage } from '../../src/auth-storage';
 
-let authRequestJson: AuthorizationRequestJson = {
+const authRequestJson: AuthorizationRequestJson = {
   response_type: 'response_typeTest',
   client_id: 'client_idTest',
   redirect_uri: 'redirect_uriTest',
@@ -26,20 +26,15 @@ async function performIonicRequestHandlerAuthReq(url: string | undefined, mocked
   const mockedAuthorizationServiceConfiguration = instance(mockedAuthorizationServiceConfigurationClass);
 
   const storage: IonicStorage = new IonicStorage();
-  let crypto: DefaultCrypto = new DefaultCrypto();
+  let crypto = new DefaultCrypto();
   if (mockedCrypto) {
     crypto = mockedCrypto;
   }
-  const ionicAuthorizationRequestHandler: IonicAuthorizationRequestHandler = new IonicAuthorizationRequestHandler(
-    mockedBrowser,
-    storage,
-    undefined,
-    crypto
-  );
+  const ionicAuthorizationRequestHandler = new IonicAuthorizationRequestHandler(mockedBrowser, storage, crypto, undefined);
 
   await ionicAuthorizationRequestHandler.performAuthorizationRequest(
     mockedAuthorizationServiceConfiguration,
-    new AuthorizationRequest(authRequestJson, crypto, false)
+    new AuthorizationRequest(authRequestJson, crypto, false),
   );
 
   return storage.getItem(AUTHORIZATION_RESPONSE_KEY);
