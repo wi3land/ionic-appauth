@@ -46,7 +46,7 @@
     "@types/uuid": "^9.0.6",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "chai": "^4.3.10",
+    "chai": "^5.1.1",
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.51.0",
     "husky": "^9.0.11",
