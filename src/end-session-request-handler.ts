@@ -7,11 +7,14 @@ export interface EndSessionHandler {
 }
 
 export class IonicEndSessionHandler implements EndSessionHandler {
-  constructor(private browser: Browser, private utils = new BasicQueryStringUtils()) {}
+  constructor(
+    private browser: Browser,
+    private utils = new BasicQueryStringUtils(),
+  ) {}
 
   public async performEndSessionRequest(
     configuration: AuthorizationServiceConfiguration,
-    request: EndSessionRequest
+    request: EndSessionRequest,
   ): Promise<string | undefined> {
     let url = this.buildRequestUrl(configuration, request);
     return this.browser.showWindow(url, request.postLogoutRedirectURI);

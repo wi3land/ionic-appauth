@@ -69,7 +69,7 @@ export class AuthService implements IAuthService {
   constructor(
     protected browser: Browser = new DefaultBrowser(),
     protected storage: StorageBackend = new LocalStorageBackend(),
-    protected requestor: Requestor = new JQueryRequestor()
+    protected requestor: Requestor = new JQueryRequestor(),
   ) {
     this.tokenHandler = new BaseTokenRequestHandler(requestor);
     this.userInfoHandler = new IonicUserInfoHandler(requestor);
@@ -196,7 +196,7 @@ export class AuthService implements IAuthService {
   protected onAuthorizationNotification(
     request: AuthorizationRequest,
     response: AuthorizationResponse | null,
-    error: AuthorizationError | null
+    error: AuthorizationError | null,
   ) {
     let codeVerifier: string | undefined =
       request.internal != undefined && this.authConfig.pkce ? request.internal.code_verifier : undefined;
@@ -223,7 +223,6 @@ export class AuthService implements IAuthService {
   }
 
   protected async performEndSessionRequest(state?: string): Promise<void> {
-
     let requestJson: EndSessionRequestJson = {
       postLogoutRedirectURI: this.authConfig.end_session_redirect_url,
       idTokenHint: this._tokenSubject.value ? this._tokenSubject.value.idToken || '' : '',
@@ -236,7 +235,6 @@ export class AuthService implements IAuthService {
     if (returnedUrl != undefined) {
       this.endSessionCallback();
     }
-
   }
 
   protected async performAuthorizationRequest(authExtras?: StringMap, state?: string): Promise<void> {
@@ -350,7 +348,6 @@ export class AuthService implements IAuthService {
   }
 
   public async signOut(state?: string, revokeTokens?: boolean) {
-
     if (revokeTokens) {
       await this.revokeTokens();
     }

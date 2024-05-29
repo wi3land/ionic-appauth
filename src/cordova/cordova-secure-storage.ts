@@ -12,7 +12,7 @@ export class CordovaSecureStorage extends StorageBackend {
     await CordovaDocument.ready();
     return SecureStorage.create(this.KEYSTORE).then(
       () => true,
-      () => false
+      () => false,
     );
   }
 

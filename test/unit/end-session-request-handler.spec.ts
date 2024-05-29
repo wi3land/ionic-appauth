@@ -25,7 +25,7 @@ describe('end Session request handler Tests', () => {
     const ionicEndSessionHandler: IonicEndSessionHandler = new IonicEndSessionHandler(mockedBrowser);
     const urlResult = await ionicEndSessionHandler.performEndSessionRequest(
       mockedAuthorizationServiceConfiguration,
-      mockedEndSessionRequest
+      mockedEndSessionRequest,
     );
     expect(urlResult).to.equal(returnedUrl);
   });

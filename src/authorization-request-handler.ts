@@ -29,7 +29,7 @@ export class IonicAuthorizationRequestHandler extends AuthorizationRequestHandle
     private browser: Browser,
     private storage: StorageBackend,
     utils = new BasicQueryStringUtils(),
-    private generateRandom = new DefaultCrypto()
+    private generateRandom = new DefaultCrypto(),
   ) {
     super(utils, generateRandom);
   }

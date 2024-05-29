@@ -74,7 +74,7 @@ export declare class AuthService implements IAuthService {
   protected onAuthorizationNotification(
     request: AuthorizationRequest,
     response: AuthorizationResponse | null,
-    error: AuthorizationError | null
+    error: AuthorizationError | null,
   ): void;
   protected internalAuthorizationCallback(url: string): Promise<void>;
   protected internalEndSessionCallback(): Promise<void>;

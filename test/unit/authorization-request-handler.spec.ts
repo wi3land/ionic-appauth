@@ -34,12 +34,12 @@ async function performIonicRequestHandlerAuthReq(url: string | undefined, mocked
     mockedBrowser,
     storage,
     undefined,
-    crypto
+    crypto,
   );
 
   await ionicAuthorizationRequestHandler.performAuthorizationRequest(
     mockedAuthorizationServiceConfiguration,
-    new AuthorizationRequest(authRequestJson, crypto, false)
+    new AuthorizationRequest(authRequestJson, crypto, false),
   );
 
   return storage.getItem(AUTHORIZATION_RESPONSE_KEY);

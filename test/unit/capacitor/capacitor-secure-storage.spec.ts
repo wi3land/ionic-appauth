@@ -22,7 +22,7 @@ describe('capacitor secure storage Tests', () => {
       new Promise((resolve, reject) => {
         resolve(value);
         reject(null);
-      })
+      }),
     );
     storage.getItem(KEY).then((returnedValue) => {
       expect(returnedValue).to.be.equal(value);

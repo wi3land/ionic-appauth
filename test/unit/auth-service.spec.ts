@@ -31,7 +31,7 @@ async function buildAuthServiceAndInit(withToken: boolean): Promise<AuthService>
     userinfo_endpoint: 'userinfo_endpointTest',
   };
   when(mockedRequestorClass.xhr<AuthorizationServiceConfigurationJson>(anything())).thenReturn(
-    new Promise((resolve) => resolve(authServiceConfigJson))
+    new Promise((resolve) => resolve(authServiceConfigJson)),
   );
   const mockedRequestor = instance(mockedRequestorClass);
 
