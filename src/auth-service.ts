@@ -222,10 +222,10 @@ export class AuthService implements IAuthService {
     this.notifyActionListers(AuthActionBuilder.SignOutSuccess());
   }
 
-  protected async performEndSessionRequest(state?: string): Promise<void> {
+  protected async performEndSessionRequest(state?: string, idTokenHint?: string): Promise<void> {
     let requestJson: EndSessionRequestJson = {
       postLogoutRedirectURI: this.authConfig.end_session_redirect_url,
-      idTokenHint: this._tokenSubject.value ? this._tokenSubject.value.idToken || '' : '',
+      idTokenHint: idTokenHint,
       state: state || undefined,
     };
     let request: EndSessionRequest = new EndSessionRequest(requestJson);
@@ -348,17 +348,17 @@ export class AuthService implements IAuthService {
   }
 
   public async signOut(state?: string, revokeTokens?: boolean) {
+    const idToken = this._tokenSubject.value ? this._tokenSubject.value.idToken || '' : '';
     if (revokeTokens) {
       await this.revokeTokens();
     }
     const token = await this.storage.getItem(TOKEN_RESPONSE_KEY);
-
     if (token) {
       await this.storage.removeItem(TOKEN_RESPONSE_KEY);
     }
 
     if ((await this.configuration).endSessionEndpoint) {
-      await this.performEndSessionRequest(state).catch((response) => {
+      await this.performEndSessionRequest(state, idToken).catch((response) => {
         this.notifyActionListers(AuthActionBuilder.SignOutFailed(response));
       });
     }
