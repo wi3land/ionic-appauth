@@ -54,6 +54,7 @@ export class AuthService implements IAuthService {
   private _authSubject: AuthSubject = new AuthSubject();
   private _actionHistory: ActionHistoryObserver = new ActionHistoryObserver();
   private _session: SessionObserver = new SessionObserver();
+  private _notifier: AuthorizationNotifier | undefined = undefined;
 
   private _authSubjectV2 = new BehaviorSubject<IAuthAction>(AuthActionBuilder.Init());
   private _tokenSubject = new BehaviorSubject<TokenResponse>(undefined);
@@ -191,6 +192,7 @@ export class AuthService implements IAuthService {
     let notifier = new AuthorizationNotifier();
     this.requestHandler.setAuthorizationNotifier(notifier);
     notifier.setAuthorizationListener((request, response, error) => this.onAuthorizationNotification(request, response, error));
+    this._notifier = notifier;
   }
 
   protected onAuthorizationNotification(
@@ -342,6 +344,10 @@ export class AuthService implements IAuthService {
   }
 
   public async signIn(authExtras?: StringMap, state?: string) {
+    if (!this._notifier) {
+      throw new Error('Trying to sign in before AuthService is initialized!');
+    }
+    
     await this.performAuthorizationRequest(authExtras, state).catch((response) => {
       this.notifyActionListers(AuthActionBuilder.SignInFailed(response));
     });
