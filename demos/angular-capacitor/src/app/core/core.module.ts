@@ -3,7 +3,7 @@ import { Requestor, StorageBackend } from '@openid/appauth';
 import { NgModule, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService, Browser } from 'ionic-appauth';
-import { CapacitorBrowser, CapacitorSecureStorage } from 'ionic-appauth/lib/capacitor';
+import { CapacitorBrowser, DefaultBrowser, CapacitorSecureStorage } from 'ionic-appauth/lib/capacitor';
 import { authFactory } from './factories';
 import { httpFactory } from './factories/http.factory';
 import { HttpClient } from '@angular/common/http';
@@ -24,7 +24,8 @@ import { HttpClient } from '@angular/common/http';
     },
     {
       provide: Browser,
-      useClass: CapacitorBrowser
+      useFactory: (platform: Platform): Browser => platform.is("hybrid") ? new CapacitorBrowser() : new DefaultBrowser(),
+      deps: [Platform]
     },
     {
       provide: AuthService,
